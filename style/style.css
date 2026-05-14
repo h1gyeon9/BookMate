@@ -1,0 +1,60 @@
+:root {
+    --main-color: #735821;
+}
+
+@font-face {
+    font-family: 'OngleipParkDahyeon';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2411-3@1.0/Ownglyph_ParkDaHyun.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
+
+*{
+    font-family: 'OngleipParkDahyeon';
+    margin: 0;
+    color: var(--main-color);
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+main{
+    width: 402px;
+    height: 874px;
+
+    background-image: url('../src/background.png');
+    background-size: cover;
+    
+    border: 4px solid black;
+    border-radius: 40px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+
+    overflow: hidden;
+}
+
+nav{
+    width: 366px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 42px;
+    background-image: url('../src/searchBar.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.navbarElement{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style/style.css">
+    <link rel="stylesheet" href="./style/character.css">
+
+    <title>북메이트 - 캐릭터 도감</title>
+</head>
+<body>
+
+    <main>
+
+        <!-- 상단 -->
+
+        <header class="topBar">
+
+            <div class="topLeft">
+
+                <a href="./index.html">
+                    <img src="./src/back.png">
+                </a>
+
+                <img src="./src/tabler_man-filled.png">
+
+            </div>
+
+            <h1>캐릭터 도감</h1>
+
+            <div class="topDummy"></div>
+
+        </header>
+
+        <!-- 대표 캐릭터 -->
+
+        <section class="mainCharacter">
+
+            <h2 id="characterName">논리적 분석가</h2>
+
+            <img
+                id="mainCharacterImg"
+                src="./src/character1.png"
+            >
+
+            <h3 id="characterLine">
+                그건 말이 안되지 않아? 네 논리에는 허점이 있어.
+            </h3>
+
+            <p id="characterDesc">
+                이 페르소나는 논리와 근거를 중시하며,
+                날카로운 질문을 던집니다.
+            </p>
+
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- 카테고리 헤더 -->
+
+        <section class="categoryHeader">
+
+            <div class="categoryTitle">기본</div>
+            <div class="categoryTitle">학자</div>
+            <div class="categoryTitle">커스텀</div>
+
+        </section>
+
+        <!-- 캐릭터 표 -->
+
+        <section class="characterTable">
+
+            <!-- 1행 -->
+
+            <button
+                class="characterCard activeCharacter"
+                data-name="논리적 분석가"
+                data-img="./src/character1.png"
+                data-line="그건 말이 안되지 않아? 네 논리에는 허점이 있어."
+                data-desc="이 페르소나는 논리와 근거를 중시하며, 날카로운 질문을 던집니다."
+                data-color="#1919B8"
+            >
+                <img src="./src/character1.png">
+            </button>
+
+            <button
+                class="characterCard"
+                data-name="철학자"
+                data-img="./src/character6.png"
+                data-line="인간은 왜 존재한다고 생각해?"
+                data-desc="본질적인 질문을 통해 사고를 깊게 만듭니다."
+                data-color="#B43131"
+            >
+                <img src="./src/character6.png">
+            </button>
+
+            <button
+                class="characterCard"
+                data-name="책 먹는 사자"
+                data-img="./src/custom1.png"
+                data-line="오늘은 어떤 책 이야기를 해볼까?"
+                data-desc="사용자가 직접 만든 커스텀 캐릭터입니다."
+                data-color="#C66A00"
+            >
+                <img src="./src/custom1.png">
+            </button>
+
+            <!-- 2행 -->
+
+            <button
+                class="characterCard"
+                data-name="외교적 중재자"
+                data-img="./src/character2.png"
+                data-line="모두의 의견을 들어보자."
+                data-desc="갈등을 조율하며 부드럽게 대화를 이끕니다."
+                data-color="#D29A00"
+            >
+                <img src="./src/character2.png">
+            </button>
+
+            <button
+                class="characterCard"
+                data-name="물리학자"
+                data-img="./src/character7.png"
+                data-line="모든 현상에는 원리가 존재해."
+                data-desc="논리적인 사고로 세상을 분석합니다."
+                data-color="#B43131"
+            >
+                <img src="./src/character7.png">
+            </button>
+
+            <button
+                class="characterCard"
+                data-name="몽상가 토끼"
+                data-img="./src/custom2.png"
+                data-line="상상은 생각보다 더 멀리 갈 수 있어."
+                data-desc="감성과 상상력을 중심으로 대화합니다."
+                data-color="#E055AA"
+            >
+                <img src="./src/custom2.png">
+            </button>
+
+            <!-- 3행 -->
+
+            <button
+                class="characterCard"
+                data-name="가치 수호자"
+                data-img="./src/character3.png"
+                data-line="그 선택이 정말 옳은 일일까?"
+                data-desc="신념과 가치를 중요하게 생각하는 캐릭터입니다."
+                data-color="#999999"
+            >
+                <img src="./src/character3.png">
+            </button>
+
+            <button
+                class="characterCard"
+                data-name="심리학자"
+                data-img="./src/character8.png"
+                data-line="그 행동엔 이유가 숨어있어."
+                data-desc="인간의 감정과 행동을 탐구합니다."
+                data-color="#7A3DB8"
+            >
+                <img src="./src/character8.png">
+            </button>
+
+            <div class="emptyCard"></div>
+
+            <!-- 4행 -->
+
+            <button
+                class="characterCard"
+                data-name="감성 공감가"
+                data-img="./src/character4.png"
+                data-line="그 장면에서 마음이 울컥했어."
+                data-desc="감정을 섬세하게 읽고 공감합니다."
+                data-color="#2D9B4D"
+            >
+                <img src="./src/character4.png">
+            </button>
+
+            <button class="characterCard lockedCard">
+                <img src="./src/lock.png">
+            </button>
+
+            <div class="emptyCard"></div>
+
+            <!-- 5행 -->
+
+            <button
+                class="characterCard"
+                data-name="비판적 회의론자"
+                data-img="./src/character5.png"
+                data-line="그 주장엔 아직 빈틈이 많아."
+                data-desc="모든 주장에 의문을 던지고 검증합니다."
+                data-color="#00A5A5"
+            >
+                <img src="./src/character5.png">
+            </button>
+
+            <button class="characterCard lockedCard">
+                <img src="./src/lock.png">
+            </button>
+
+            <div class="emptyCard"></div>
+
+        </section>
+
+        <!-- nav -->
+
+        <nav>
+
+            <a href="./index.html" class="navbarElement">
+                <img src="./src/mynaui_home.png"/>
+                <p>홈</p>
+            </a>
+
+            <a class="navbarElement">
+                <img src="./src/clarity_talk-bubbles-line.png"/>
+                <p>대화</p>
+            </a>
+
+            <a href="./archive.html" class="navbarElement">
+                <img src="./src/hugeicons_book-open-02.png"/>
+                <p>독서록</p>
+            </a>
+
+            <a href="./character.html" class="navbarElement">
+                <img src="./src/tabler_man-filled.png"/>
+                <p>캐릭터</p>
+            </a>
+
+            <a href="./mypage.html" class="navbarElement">
+                <img src="./src/weui_me-outlined.png"/>
+                <p>마이</p>
+            </a>
+
+        </nav>
+
+    </main>
+
+    <script>
+
+        const characterCards = document.querySelectorAll('.characterCard');
+
+        const characterName = document.getElementById('characterName');
+        const characterImg = document.getElementById('mainCharacterImg');
+        const characterLine = document.getElementById('characterLine');
+        const characterDesc = document.getElementById('characterDesc');
+
+        characterCards.forEach(card => {
+
+            if(card.classList.contains('lockedCard')) return;
+
+            card.addEventListener('click', () => {
+
+                document
+                    .querySelector('.activeCharacter')
+                    ?.classList.remove('activeCharacter');
+
+                card.classList.add('activeCharacter');
+
+                characterName.textContent = card.dataset.name;
+
+                characterImg.src = card.dataset.img;
+
+                characterLine.textContent = card.dataset.line;
+
+                characterDesc.textContent = card.dataset.desc;
+
+                characterName.style.color = card.dataset.color;
+                characterLine.style.color = card.dataset.color;
+
+            });
+
+        });
+
+    </script>
+
+</body>
+</html>

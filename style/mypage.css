@@ -1,0 +1,237 @@
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 120px;
+    background-color: #F8F4EC;
+}
+
+/* 프로필 */
+
+.profileSection{
+    width: 366px;
+    margin-top: 24px;
+}
+
+.topBar{
+    display: flex;
+    gap: 8px;
+}
+
+.iconBtn{
+    width: 24px;
+    height: 24px;
+}
+
+.profileBox{
+    display: flex;
+    align-items: center;
+    margin-top: 24px;
+    gap: 18px;
+}
+
+.profileImg{
+    width: 82px;
+    height: 82px;
+}
+
+.profileText h1{
+    font-size: 30px;
+    color: #8A642C;
+}
+
+.profileText p{
+    margin-top: 6px;
+    color: #B6A48A;
+    font-size: 16px;
+}
+
+/* 기록 카드 */
+
+.recordSection{
+    display: flex;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.recordCard{
+    width: 106px;
+    height: 106px;
+    border-radius: 24px;
+    border: 2px solid #9A7645;
+    background-color: #FFFDF8;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.recordCard h2{
+    font-size: 36px;
+    color: #8A642C;
+}
+
+.recordCard p{
+    margin-top: 8px;
+    font-size: 14px;
+    color: #8A642C;
+}
+
+/* 캘린더 */
+
+.calendarSection{
+    display: flex;
+    margin-top: 20px;
+    gap: 12px;
+}
+
+.monthRow{
+    display: flex;
+    gap: 14px;
+}
+
+.month p{
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: #8A642C;
+}
+
+.calendarGrid{
+    display: grid;
+    grid-template-columns: repeat(4, 12px);
+    gap: 2px;
+}
+
+.calendarGrid div{
+    width: 12px;
+    height: 12px;
+    border: 1px solid #D9C6A5;
+    border-radius: 2px;
+}
+
+.calendarGrid .active{
+    background-color: #C8A873;
+    border: none;
+}
+
+.levelBox{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 18px;
+}
+
+.level{
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    background-color: #E8DDCC;
+}
+
+.level.low{
+    background-color: #dcc9ab
+}
+
+.level.active{
+    background-color: #C8A873;
+}
+
+/* 메세지 */
+
+.messageSection{
+    width: 366px;
+    display: flex;
+    justify-content: right;
+    align-items: flex-end;
+    margin-top: 20px;
+}
+
+.booksImg{
+    width: 90px;
+}
+
+.girlImg{
+    width: 92px;
+}
+
+.speechBubble{
+    width: 160px;
+    height: 88px;
+    border-radius: 28px;
+    background-color: #E6D2B1;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.speechBubble p{
+    color: #7A5A2D;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* 책 상태 */
+
+.bookStatus{
+    width: 366px;
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+    padding-bottom: 0px;
+    border-bottom: 4px solid #B08A52;
+}
+
+.status{
+    font-size: 22px;
+    color: #BFA785;
+}
+
+.activeStatus{
+    color: #7A5A2D;
+}
+
+/* 정렬 */
+
+.bookListSection{
+    width: 366px;
+    margin-top: 20px;
+}
+
+.sortBox{
+    width: 110px;
+    height: 36px;
+    border: 2px solid #C8A873;
+    border-radius: 14px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.sortBox p{
+    font-size: 14px;
+    color: #7A5A2D;
+}
+
+/* 책 리스트 */
+
+.bookList{
+    margin-top: 24px;
+    display: flex;
+    gap: 18px;
+}
+
+.bookList img{
+    width: 104px;
+    border-radius: 10px;
+}
+
+/* 네비 */
+
+nav{
+    margin-top: 26px;
+}

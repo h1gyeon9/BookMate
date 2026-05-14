@@ -1,0 +1,171 @@
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #F8F4EC;
+}
+
+/* 상단 */
+
+.topBar{
+    width: 100%;
+    height: 72px;
+
+    padding: 0 20px;
+    box-sizing: border-box;
+
+    background-color: #DDD2BE;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.topLeft{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topLeft img{
+    width: 24px;
+}
+
+.topBar h1{
+    font-size: 24px;
+    color: #8A642C;
+}
+
+.topDummy{
+    width: 58px;
+}
+
+/* 대표 캐릭터 */
+
+.mainCharacter{
+    width: 320px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: 34px;
+}
+
+#characterName{
+    font-size: 28px;
+    color: #1919B8;
+}
+
+#mainCharacterImg{
+    width: 210px;
+    margin-top: 24px;
+}
+
+#characterLine{
+    margin-top: 26px;
+
+    font-size: 18px;
+    color: #1919B8;
+
+    text-align: center;
+    line-height: 1.5;
+}
+
+#characterDesc{
+    margin-top: 10px;
+
+    font-size: 14px;
+    color: #8A642C;
+
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* 구분선 */
+
+.divider{
+    width: 100%;
+    height: 4px;
+
+    background-color: #B39A73;
+    opacity: 0.5;
+
+    margin-top: 30px;
+}
+
+/* 카테고리 */
+
+.categoryHeader{
+    width: 320px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 12px;
+
+    margin-top: 20px;
+}
+
+.categoryTitle{
+    height: 42px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #A88A58;
+
+    color: white;
+    font-size: 18px;
+}
+
+/* 캐릭터 표 */
+
+.characterTable{
+    width: 350px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 12px;
+
+    margin-top: 16px;
+
+    max-height: 340px;
+    overflow-y: auto;
+
+    scrollbar-width: none;
+}
+
+.characterCard{
+    width: 98px;
+    height: 118px;
+
+    border: none;
+    background-color: #EFE8DB;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+}
+
+.characterCard img{
+    width: 74px;
+}
+
+.activeCharacter{
+    outline: 3px solid #9B7A49;
+}
+
+.lockedCard img{
+    width: 34px;
+    opacity: 0.7;
+}
+
+.emptyCard{
+    width: 98px;
+    height: 118px;
+}

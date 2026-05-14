@@ -1,0 +1,183 @@
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    background-color: #F8F4EC;
+
+    padding-bottom: 120px;
+}
+
+/* 상단 */
+
+.topBar{
+    width: 320px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-top: 18px;
+}
+
+.backBtn img{
+    width: 22px;
+}
+
+.topBar h1{
+    font-size: 22px;
+    color: #8A642C;
+}
+
+/* 책 정보 */
+
+.bookSection{
+    width: 320px;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+
+    margin-top: 28px;
+}
+
+.bookCoverBox{
+    position: relative;
+}
+
+.tape{
+    position: absolute;
+
+    width: 52px;
+
+    top: -12px;
+    left: -10px;
+
+    transform: rotate(-18deg);
+}
+
+.bookCover{
+    width: 108px;
+
+    border: 3px solid #C7B28B;
+}
+
+.bookInfo{
+    width: 152px;
+}
+
+.infoRow{
+    display: flex;
+    align-items: center;
+
+    padding: 6px 0;
+
+    border-bottom: 2px solid #B69B6D;
+}
+
+.infoTitle{
+    width: 68px;
+
+    font-size: 15px;
+    color: #A48758;
+}
+
+.infoContent{
+    font-size: 16px;
+    color: #7B5B2C;
+}
+
+.starBox{
+    font-size: 16px;
+    color: #E0B25C;
+
+    letter-spacing: 2px;
+}
+
+/* 메모 */
+
+.memoSection{
+    width: 320px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    margin-top: 30px;
+}
+
+.memoCard{
+    position: relative;
+
+    padding: 4px 22px;
+
+    background-color: #ECE6D8;
+
+    border-radius: 4px;
+}
+
+.pin{
+    position: absolute;
+
+    width: 26px;
+
+    top: -10px;
+    right: -10px;
+
+    transform: rotate(18deg);
+}
+
+.memoCard h2{
+    font-size: 18px;
+    color: #4D4538;
+
+    line-height: 1.5;
+}
+
+.memoCard p{
+    margin-top: 14px;
+
+    font-size: 15px;
+    line-height: 1.8;
+
+    color: #4D4538;
+
+    word-break: keep-all;
+}
+
+/* 버튼 */
+
+.bottomSection{
+    width: 320px;
+
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 8px;
+}
+
+.chatBtn{
+    height: 32px;
+
+    padding: 0 16px;
+
+    border-radius: 12px;
+    border: 2px solid #B08C57;
+
+    background-color: #FFFDF8;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #9B7643;
+    font-size: 16px;
+}
+
+.chatBtn img{
+    width: 20px;
+}
+
+nav{
+    margin-top: 25px;
+}
