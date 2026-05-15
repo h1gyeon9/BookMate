@@ -30,11 +30,11 @@ const personaMessages = {
 };
 
 const personaProfiles = {
-  "논리적 분석가": "./src/characters/character1.png",
-  "지배적 정복자": "./src/characters/character5.png",
-  "외교적 중재자": "./src/characters/character3.png",
-  "비판적 회의론자": "./src/characters/character2.png",
-  "가치 수호자": "./src/characters/character4.png",
+  "논리적 분석가": "./src/character1.png",
+  "지배적 정복자": "./src/character7.png",
+  "외교적 중재자": "./src/character2.png",
+  "비판적 회의론자": "./src/character5.png",
+  "가치 수호자": "./src/character3.png",
 };
 
 const personaBubbleClass = {
@@ -127,6 +127,44 @@ function addMessage({
     chatContainer.scrollHeight;
 }
 
+function addLoadingMessage({
+  name,
+  profile,
+  bubbleClass,
+}) {
+
+  const messageEl = document.createElement("div");
+
+  messageEl.className = "message";
+
+  messageEl.innerHTML = `
+    <div class="profile">
+      <img src="${profile}">
+    </div>
+
+    <div class="messageContent">
+
+      <div class="name">
+        ${name}
+      </div>
+
+      <div class="bubble ${bubbleClass} loadingBubble">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+    </div>
+  `;
+
+  chatContainer.appendChild(messageEl);
+
+  chatContainer.scrollTop =
+    chatContainer.scrollHeight;
+
+  return messageEl.querySelector(".bubble");
+}
+
 async function fetchGeminiMessage(personaDescription) {
 
   const res = await fetch("/.netlify/functions/gemini", {
@@ -159,27 +197,28 @@ function startChat() {
         const customPersona =
           customInput.value.trim() || "커스텀 페르소나";
 
+        const loadingBubble = addLoadingMessage({
+          name: customPersona,
+          profile: "./src/characters/custom2.png",
+          bubbleClass: "mediBubble",
+        });
+
         try{
 
           const text =
             await fetchGeminiMessage(customPersona);
 
-          addMessage({
-            name: customPersona,
-            text,
-            profile: "./src/custom1.png",
-            bubbleClass: "mediBubble",
-          });
+          loadingBubble.innerHTML = text;
+
+          loadingBubble.classList.remove("loadingBubble");
 
         }
         catch{
 
-          addMessage({
-            name: customPersona,
-            text: "응답을 불러오지 못했습니다.",
-            profile: "./src/custom1.png",
-            bubbleClass: "mediBubble",
-          });
+          loadingBubble.innerHTML =
+            "응답을 불러오지 못했습니다.";
+
+          loadingBubble.classList.remove("loadingBubble");
 
         }
 

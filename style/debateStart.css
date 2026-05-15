@@ -301,3 +301,50 @@ main{
 .hidden{
     display: none !important;
 }
+
+.loadingBubble{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    min-width: 64px;
+    min-height: 54px;
+}
+
+.loadingBubble span{
+    width: 8px;
+    height: 8px;
+
+    border-radius: 999px;
+
+    background-color: #8A7B66;
+
+    animation: blink 1.2s infinite;
+}
+
+.loadingBubble span:nth-child(2){
+    animation-delay: 0.2s;
+}
+
+.loadingBubble span:nth-child(3){
+    animation-delay: 0.4s;
+}
+
+@keyframes blink{
+
+    0%{
+        opacity: 0.2;
+        transform: translateY(0);
+    }
+
+    50%{
+        opacity: 1;
+        transform: translateY(-4px);
+    }
+
+    100%{
+        opacity: 0.2;
+        transform: translateY(0);
+    }
+
+}
