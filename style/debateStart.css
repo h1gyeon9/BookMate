@@ -232,13 +232,13 @@ main{
 }
 
 .kingBubble{
-    background-color: #F5E7DF;
-    border: 2px solid #DDB8A4;
+    background-color: #f5dfdf;
+    border: 2px solid #dda4a4;
 }
 
 .mediBubble{
-    background-color: #F2EEDC;
-    border: 2px solid #D8CAA1;
+    background-color: #f0dcf2;
+    border: 2px solid #d2a1d8;
 }
 
 .skepticBubble{
@@ -247,8 +247,13 @@ main{
 }
 
 .valueBubble{
-    background-color: #F7F1EA;
-    border: 2px solid #D8CAB8;
+    background-color: #ecf7ea;
+    border: 2px solid #b9d8b8;
+}
+
+.customBubble{
+    background-color: #eaf7f6;
+    border: 2px solid #b8d6d8;
 }
 
 /* 입력창 */

@@ -30,11 +30,11 @@ const personaMessages = {
 };
 
 const personaProfiles = {
-  "논리적 분석가": "./src/character1.png",
-  "지배적 정복자": "./src/character7.png",
-  "외교적 중재자": "./src/character2.png",
-  "비판적 회의론자": "./src/character5.png",
-  "가치 수호자": "./src/character3.png",
+  "논리적 분석가": "./src/characters/character1.png",
+  "지배적 정복자": "./src/characters/character5.png",
+  "외교적 중재자": "./src/characters/character3.png",
+  "비판적 회의론자": "./src/characters/character2.png",
+  "가치 수호자": "./src/characters/character4.png",
 };
 
 const personaBubbleClass = {
@@ -200,7 +200,7 @@ function startChat() {
         const loadingBubble = addLoadingMessage({
           name: customPersona,
           profile: "./src/characters/custom2.png",
-          bubbleClass: "mediBubble",
+          bubbleClass: "customBubble",
         });
 
         try{
