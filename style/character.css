@@ -80,6 +80,8 @@ main{
 
     text-align: center;
     line-height: 1.6;
+
+    height: 48px;
 }
 
 /* 구분선 */
@@ -91,7 +93,7 @@ main{
     background-color: #B39A73;
     opacity: 0.5;
 
-    margin-top: 30px;
+    margin-top: 4px;
 }
 
 /* 카테고리 */
@@ -123,7 +125,7 @@ main{
 /* 캐릭터 표 */
 
 .characterTable{
-    width: 350px;
+    width: 320px;
 
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -132,7 +134,7 @@ main{
 
     margin-top: 16px;
 
-    max-height: 340px;
+    max-height: 230px;
     overflow-y: auto;
 
     scrollbar-width: none;
@@ -157,7 +159,7 @@ main{
 }
 
 .activeCharacter{
-    outline: 3px solid #9B7A49;
+    border: 3px solid #9B7A49;
 }
 
 .lockedCard img{
