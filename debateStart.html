@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style/style.css">
+    <link rel="stylesheet" href="./style/debateStart.css">
+
+    <title>북메이트 - 토론 시작</title>
+</head>
+<body>
+
+    <main>
+
+        <!-- 상단 -->
+
+        <header class="bookHeader">
+
+            <a href="./index.html" class="backBtn">
+                <img src="./src/back.png">
+            </a>
+
+            <h1>토론하기</h1>
+
+        </header>
+
+        <div class="divider"></div>
+
+        <!-- 선택 화면 -->
+
+        <section id="select-page">
+
+            <h2 class="selectTitle">
+                함께 이야기하고 싶은<br>
+                페르소나를 선택해주세요
+            </h2>
+
+            <div class="personaGrid">
+
+                <button class="persona-btn" data-persona="논리적 분석가">
+                    <img src="./src/characters/character1.png">
+                    <p>논리적 분석가</p>
+                </button>
+
+                <button class="persona-btn" data-persona="지배적 정복자">
+                    <img src="./src/characters/character5.png">
+                    <p>지배적 정복자</p>
+                </button>
+
+                <button class="persona-btn" data-persona="외교적 중재자">
+                    <img src="./src/characters/character3.png">
+                    <p>외교적 중재자</p>
+                </button>
+
+                <button class="persona-btn" data-persona="비판적 회의론자">
+                    <img src="./src/characters/character2.png">
+                    <p>비판적 회의론자</p>
+                </button>
+
+                <button class="persona-btn" data-persona="가치 수호자">
+                    <img src="./src/characters/character4.png">
+                    <p>가치 수호자</p>
+                </button>
+
+                <button class="persona-btn" data-persona="커스텀">
+                    <img src="./src/characters/custom2.png">
+                    <p>커스텀</p>
+                </button>
+
+            </div>
+
+            <div id="custom-box" class="hidden">
+
+                <input
+                    type="text"
+                    id="custom-input"
+                    placeholder="ex) 감성적이고 시적인 독서가"
+                />
+
+            </div>
+
+            <button id="start-btn">
+                토론 시작하기
+            </button>
+
+        </section>
+
+        <!-- 채팅 화면 -->
+
+        <section id="chat-page" class="hidden">
+
+            
+
+            <div id="chat-container"></div>
+
+            <!-- 입력창 -->
+
+            <div class="inputSection">
+
+                <div class="fakeInput">채팅을 입력하세요...</div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="./script/debateStart.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,303 @@
+main{
+    max-width: 430px;
+    min-height: 100vh;
+
+    margin: 0 auto;
+    padding-bottom: 120px;
+
+    background-color: #F8F4EC;
+}
+
+/* 상단 */
+
+.bookHeader{
+    height: 74px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 0 20px;
+}
+
+.backBtn img{
+    width: 22px;
+}
+
+.bookHeader h1{
+    font-size: 22px;
+    color: #8A642C;
+}
+
+.divider{
+    width: 100%;
+    height: 4px;
+
+    background-color: #BCA57E;
+    opacity: 0.5;
+}
+
+/* 선택 */
+
+#select-page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.selectTitle{
+    margin-top: 48px;
+
+    text-align: center;
+    line-height: 1.6;
+
+    font-size: 24px;
+    color: #4C4337;
+}
+
+.personaGrid{
+    width: 320px;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 18px;
+
+    margin-top: 40px;
+}
+
+.persona-btn{
+    height: 160px;
+
+    border-radius: 24px;
+    border: 2px solid #D8C3A1;
+
+    background-color: #FDFBF7;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+}
+
+.persona-btn.selected{
+    border: 3px solid #9B7A49;
+}
+
+.persona-btn img{
+    width: 92px;
+}
+
+.persona-btn p{
+    margin-top: 12px;
+
+    font-size: 18px;
+    color: #7D5A2B;
+}
+
+/* 커스텀 */
+
+#custom-box{
+    width: 320px;
+    margin-top: 20px;
+}
+
+#custom-input{
+    width: 100%;
+    height: 52px;
+
+    padding: 0 18px;
+
+    border-radius: 16px;
+    border: 2px solid #D8C3A1;
+
+    background-color: #FFFDFA;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+/* 시작 버튼 */
+
+#start-btn{
+    margin-top: 32px;
+
+    width: 320px;
+    height: 58px;
+
+    border: none;
+    border-radius: 20px;
+
+    background-color: #9B7A49;
+
+    color: white;
+    font-size: 20px;
+}
+
+/* 채팅 */
+
+#chat-page{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.introText{
+    margin-top: 46px;
+
+    text-align: center;
+
+    font-size: 22px;
+    line-height: 1.7;
+
+    color: #262626;
+}
+
+/* 채팅 컨테이너 */
+
+#chat-container{
+    display: flex;
+    flex-direction: column;
+
+    gap: 28px;
+
+    padding: 42px 20px 140px 20px;
+
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 180px;
+}
+
+/* 메시지 */
+
+.message{
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+
+    animation: fadeUp 0.4s ease;
+}
+
+.profile{
+    width: 64px;
+    height: 64px;
+
+    border-radius: 999px;
+    border: 1px solid #777;
+
+    background-color: white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+.profile img{
+    width: 56px;
+}
+
+.messageContent{
+    max-width: 250px;
+}
+
+.name{
+    margin-bottom: 8px;
+
+    font-size: 15px;
+    color: #7B5B2C;
+}
+
+.bubble{
+    padding: 18px 20px;
+
+    border-radius: 18px;
+
+    line-height: 1.8;
+    font-size: 17px;
+
+    word-break: keep-all;
+}
+
+/* 캐릭터별 */
+
+.logicBubble{
+    background-color: #E6EDF8;
+    border: 2px solid #B7C9EA;
+}
+
+.kingBubble{
+    background-color: #F5E7DF;
+    border: 2px solid #DDB8A4;
+}
+
+.mediBubble{
+    background-color: #F2EEDC;
+    border: 2px solid #D8CAA1;
+}
+
+.skepticBubble{
+    background-color: #EFE7D9;
+    border: 2px solid #D5C3A1;
+}
+
+.valueBubble{
+    background-color: #F7F1EA;
+    border: 2px solid #D8CAB8;
+}
+
+/* 입력창 */
+
+.inputSection{
+    position: fixed;
+
+    bottom: 20px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 100%;
+    max-width: 430px;
+
+    display: flex;
+    justify-content: center;
+}
+
+.fakeInput{
+    width: 350px;
+    height: 42px;
+
+    padding: 13px 20px;
+    color: var(--main-color);
+
+    border-radius: 21px;
+
+    background-color: #ffffff;
+
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+}
+
+/* 애니메이션 */
+
+@keyframes fadeUp{
+
+    from{
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to{
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+.hidden{
+    display: none !important;
+}
