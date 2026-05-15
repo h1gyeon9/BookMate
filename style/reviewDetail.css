@@ -30,6 +30,11 @@ main{
 }
 
 /* 책 정보 */
+.reviewWrapper{
+    min-height: 750px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
 
 .bookSection{
     width: 320px;
@@ -179,5 +184,5 @@ main{
 }
 
 nav{
-    margin-top: 25px;
+    margin-top: 10px;
 }
