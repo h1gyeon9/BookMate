@@ -140,6 +140,7 @@ main{
 #chat-page{
     display: flex;
     flex-direction: column;
+    padding-bottom: 70px;
     height: 100vh;
     overflow: hidden;
 }

@@ -26,8 +26,48 @@ main{
     font-size: 20px;
 }
 
+.guideWrapper{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.guideCharacter{
+    width: 150px;
+    object-fit: contain;
+}
+
+.guideTitle{
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.guideText{
+    padding-left: 0;
+    list-style: none;
+    text-align: center;
+}
+
+.guideText li{
+    margin-bottom: 5px;
+}
+
+.guideIcon{
+    width: 15px;
+    vertical-align: middle;
+}
+
+.guideIconAlign{
+    vertical-align: baseline;
+}
+
 .startChat{
-    margin-top: 240px;
+    margin-top: 0px;
     display: flex;
     width: 356px;
     height: 92px;
@@ -42,10 +82,11 @@ main{
     color: white;
     background-color: var(--main-color);
     font-size: 24px;
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.25);
 }
 
 .calandar{
-    margin-top: 100px;
+    margin-top: 45px;
 }
 
 nav{
