@@ -63,3 +63,52 @@ nav{
 .navbarElement p{
     text-decoration: none;
 }
+
+@media (max-width: 600px) {
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        overflow: hidden;
+    }
+
+    body {
+        display: block;
+    }
+
+    main {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        padding-bottom: 0 !important;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    nav {
+        width: calc(100% - 36px);
+        max-width: 366px;
+        margin-inline: auto;
+        margin-top: auto !important;
+        gap: clamp(24px, 10vw, 42px);
+        flex-shrink: 0;
+    }
+
+    .inputBox,
+    .startChat,
+    .profileSection,
+    .messageSection,
+    .bookStatus,
+    .bookListSection {
+        width: calc(100% - 36px) !important;
+        max-width: 366px;
+    }
+
+    .inputBox input {
+        width: 100% !important;
+    }
+}

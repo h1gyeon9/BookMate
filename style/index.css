@@ -92,3 +92,12 @@ main{
 nav{
     margin-top: 40px;
 }
+
+@media (max-width: 600px) {
+    .startChat {
+        width: calc(100vw - 16px) !important;
+        max-width: 386px;
+        white-space: nowrap;
+        word-break: keep-all;
+    }
+}

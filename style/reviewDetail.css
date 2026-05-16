@@ -32,6 +32,9 @@ main{
 /* 책 정보 */
 .reviewWrapper{
     min-height: 750px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -185,4 +188,32 @@ main{
 
 nav{
     margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+    main {
+        overflow: hidden;
+    }
+
+    .topBar {
+        width: calc(100% - 72px);
+        max-width: 320px;
+        flex-shrink: 0;
+    }
+
+    .reviewWrapper {
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding-bottom: 16px;
+    }
+
+    .bookSection,
+    .memoSection,
+    .bottomSection {
+        width: calc(100% - 72px);
+        max-width: 320px;
+    }
 }
