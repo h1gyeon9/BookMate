@@ -85,6 +85,14 @@
                 토론 시작하기
             </button>
 
+            <div id="saved-session-box" class="savedSession hidden">
+                <p id="saved-session-text">저장된 대화가 있어요.</p>
+                <div class="savedSessionActions">
+                    <button type="button" id="restore-btn">이어하기</button>
+                    <button type="button" id="clear-saved-btn">삭제</button>
+                </div>
+            </div>
+
         </section>
 
         <!-- 채팅 화면 -->
@@ -97,11 +105,21 @@
 
             <!-- 입력창 -->
 
-            <div class="inputSection">
+            <form id="chat-form" class="inputSection">
 
-                <div class="fakeInput">프로토타입에서는 채팅 입력 및 전송이 지원되지 않습니다.</div>
+                <input
+                    type="text"
+                    id="message-input"
+                    class="chatInput"
+                    placeholder="책에 대한 생각을 입력하세요"
+                    autocomplete="off"
+                />
 
-            </div>
+                <button type="submit" id="send-btn" class="sendBtn">전송</button>
+
+                <button type="button" id="review-btn" class="reviewBtn">독서록</button>
+
+            </form>
 
         </section>
 
