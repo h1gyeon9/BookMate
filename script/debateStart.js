@@ -18,7 +18,8 @@ const REVIEW_STORAGE_KEY = "bookmate.readingReviews.v1";
 let selectedPersonas = [];
 let activePersonas = [];
 let chatHistory = [];
-let nextPersonaIndex = 0;
+let personaTurnQueue = [];
+let personaQuestionCounts = {};
 let currentReview = null;
 let bookInfo = null;
 let awaitingBookInfo = false;
@@ -93,7 +94,8 @@ startBtn.addEventListener("click", async () => {
   currentReview = null;
   bookInfo = null;
   awaitingBookInfo = true;
-  nextPersonaIndex = 0;
+  personaTurnQueue = createShuffledPersonaQueue(activePersonas);
+  personaQuestionCounts = createQuestionCountMap(activePersonas);
   chatContainer.innerHTML = "";
 
   showChatPage();
@@ -186,6 +188,7 @@ function resolvePersona(persona) {
     const customPersona = customInput.value.trim() || "커스텀 페르소나";
 
     return {
+      id: `custom:${customPersona}`,
       key: persona,
       name: customPersona,
       profile: "./src/characters/custom2.png",
@@ -194,6 +197,7 @@ function resolvePersona(persona) {
   }
 
   return {
+    id: persona,
     key: persona,
     name: persona,
     profile: personaProfiles[persona] || "./src/lionProfile.png",
@@ -214,13 +218,17 @@ async function startChat() {
 
   setBusy(true, "페르소나가 토론을 열고 있어요...");
 
-  const openingPersonaIndex = getRandomIndex(activePersonas.length);
-  const persona = activePersonas[openingPersonaIndex];
+  const persona = drawNextPersona();
+
+  if (!persona) {
+    setBusy(false);
+    return;
+  }
 
   await delay(650);
 
   if (persona.key === "커스텀") {
-    await addOpeningMessageFromGemini(persona);
+    await addOpeningMessageFromGemini(persona, { countsAsQuestion: true });
   } else {
     addMessage({
       name: persona.name,
@@ -228,14 +236,14 @@ async function startChat() {
       profile: persona.profile,
       bubbleClass: persona.bubbleClass,
     });
+    incrementQuestionCount(persona);
   }
 
-  nextPersonaIndex = (openingPersonaIndex + 1) % activePersonas.length;
   saveSession();
   setBusy(false);
 }
 
-async function addOpeningMessageFromGemini(persona) {
+async function addOpeningMessageFromGemini(persona, { countsAsQuestion = false } = {}) {
   const loadingBubble = addLoadingMessage({
     name: persona.name,
     profile: persona.profile,
@@ -251,6 +259,10 @@ async function addOpeningMessageFromGemini(persona) {
     });
 
     completeLoadingMessage(loadingBubble, text);
+    if (countsAsQuestion) {
+      incrementQuestionCount(persona);
+    }
+
     appendHistory({
       role: "assistant",
       name: persona.name,
@@ -262,16 +274,20 @@ async function addOpeningMessageFromGemini(persona) {
 }
 
 async function requestNextPersonaReply() {
-  const personas = getNextReplyPersonas();
+  const selectedReplyPersonas = getNextReplyPersonas();
 
-  if (personas.length === 0) {
+  if (selectedReplyPersonas.length === 0) {
     return;
   }
+
+  const questionPersona = chooseQuestionPersona(selectedReplyPersonas);
+  const personas = placeQuestionPersonaLast(selectedReplyPersonas, questionPersona);
 
   saveSession();
   setBusy(true, getReplyStatusText(personas));
 
-  for (const [index, persona] of personas.entries()) {
+  for (const persona of personas) {
+    const canAskQuestion = getPersonaId(persona) === getPersonaId(questionPersona);
     const loadingBubble = addLoadingMessage({
       name: persona.name,
       profile: persona.profile,
@@ -284,10 +300,14 @@ async function requestNextPersonaReply() {
         personaDescription: persona.name,
         bookInfo,
         conversation: getConversationForApi(),
-        canAskQuestion: index === personas.length - 1,
+        canAskQuestion,
       });
 
       completeLoadingMessage(loadingBubble, text);
+      if (canAskQuestion) {
+        incrementQuestionCount(persona);
+      }
+
       appendHistory({
         role: "assistant",
         name: persona.name,
@@ -543,7 +563,8 @@ function saveSession() {
     selectedPersonas,
     activePersonas,
     chatHistory,
-    nextPersonaIndex,
+    personaTurnQueue,
+    personaQuestionCounts,
     currentReview,
     bookInfo,
     awaitingBookInfo,
@@ -646,9 +667,10 @@ function restoreSavedSession() {
   }
 
   selectedPersonas = savedSession.selectedPersonas || [];
-  activePersonas = savedSession.activePersonas || selectedPersonas.map(resolvePersona);
+  activePersonas = normalizeActivePersonas(savedSession.activePersonas || selectedPersonas.map(resolvePersona));
   chatHistory = savedSession.chatHistory || [];
-  nextPersonaIndex = savedSession.nextPersonaIndex || 0;
+  personaTurnQueue = sanitizePersonaQueue(savedSession.personaTurnQueue);
+  personaQuestionCounts = normalizeQuestionCounts(savedSession.personaQuestionCounts);
   currentReview = savedSession.currentReview || null;
   bookInfo = savedSession.bookInfo || null;
   awaitingBookInfo = Boolean(savedSession.awaitingBookInfo);
@@ -848,13 +870,179 @@ function formatReviewTitle(info) {
 function getNextReplyPersonas() {
   const replyCount = Math.min(2, activePersonas.length);
   const personas = [];
+  const excludedIds = new Set();
 
   for (let index = 0; index < replyCount; index += 1) {
-    personas.push(activePersonas[nextPersonaIndex % activePersonas.length]);
-    nextPersonaIndex += 1;
+    const persona = drawNextPersona(excludedIds);
+
+    if (!persona) {
+      break;
+    }
+
+    personas.push(persona);
+    excludedIds.add(getPersonaId(persona));
   }
 
   return personas;
+}
+
+function drawNextPersona(excludedIds = new Set()) {
+  if (activePersonas.length === 0) {
+    return null;
+  }
+
+  const availablePersonas = activePersonas.filter(
+    (persona) => !excludedIds.has(getPersonaId(persona)),
+  );
+
+  if (availablePersonas.length === 0) {
+    return null;
+  }
+
+  personaTurnQueue = sanitizePersonaQueue(personaTurnQueue);
+
+  let queueIndex = personaTurnQueue.findIndex((personaId) => !excludedIds.has(personaId));
+
+  if (queueIndex === -1) {
+    personaTurnQueue = createShuffledPersonaQueue(availablePersonas);
+    queueIndex = personaTurnQueue.findIndex((personaId) => !excludedIds.has(personaId));
+  }
+
+  if (queueIndex === -1) {
+    return null;
+  }
+
+  const [personaId] = personaTurnQueue.splice(queueIndex, 1);
+  return findPersonaById(personaId);
+}
+
+function chooseQuestionPersona(personas) {
+  if (personas.length === 0) {
+    return null;
+  }
+
+  const minQuestionCount = Math.min(...personas.map(getQuestionCount));
+  const candidates = personas.filter((persona) => getQuestionCount(persona) === minQuestionCount);
+
+  return candidates[getRandomIndex(candidates.length)];
+}
+
+function placeQuestionPersonaLast(personas, questionPersona) {
+  const questionPersonaId = getPersonaId(questionPersona);
+
+  if (!questionPersonaId) {
+    return personas;
+  }
+
+  return [
+    ...personas.filter((persona) => getPersonaId(persona) !== questionPersonaId),
+    ...personas.filter((persona) => getPersonaId(persona) === questionPersonaId),
+  ];
+}
+
+function incrementQuestionCount(persona) {
+  const personaId = getPersonaId(persona);
+  personaQuestionCounts[personaId] = getQuestionCount(persona) + 1;
+}
+
+function getQuestionCount(persona) {
+  const count = Number(personaQuestionCounts[getPersonaId(persona)]);
+  return Number.isFinite(count) ? count : 0;
+}
+
+function createQuestionCountMap(personas) {
+  return personas.reduce((counts, persona) => {
+    counts[getPersonaId(persona)] = 0;
+    return counts;
+  }, {});
+}
+
+function normalizeQuestionCounts(savedCounts) {
+  const counts = createQuestionCountMap(activePersonas);
+
+  if (!savedCounts || typeof savedCounts !== "object") {
+    return counts;
+  }
+
+  activePersonas.forEach((persona) => {
+    const personaId = getPersonaId(persona);
+    const count = Number(savedCounts[personaId] ?? savedCounts[persona.name]);
+    counts[personaId] = Number.isFinite(count) ? count : 0;
+  });
+
+  return counts;
+}
+
+function createShuffledPersonaQueue(personas) {
+  return shuffleArray(personas.map(getPersonaId));
+}
+
+function sanitizePersonaQueue(queue) {
+  if (!Array.isArray(queue)) {
+    return [];
+  }
+
+  const activePersonaIds = new Set(activePersonas.map(getPersonaId));
+  return queue.filter((personaId) => activePersonaIds.has(personaId));
+}
+
+function shuffleArray(items) {
+  const shuffledItems = [...items];
+
+  for (let index = shuffledItems.length - 1; index > 0; index -= 1) {
+    const randomIndex = getRandomIndex(index + 1);
+    [shuffledItems[index], shuffledItems[randomIndex]] = [shuffledItems[randomIndex], shuffledItems[index]];
+  }
+
+  return shuffledItems;
+}
+
+function normalizeActivePersonas(personas) {
+  if (!Array.isArray(personas)) {
+    return [];
+  }
+
+  return personas
+    .map((persona) => {
+      if (typeof persona === "string") {
+        return resolvePersona(persona);
+      }
+
+      if (!persona || typeof persona !== "object") {
+        return null;
+      }
+
+      const name = persona.name || persona.key || "페르소나";
+
+      return {
+        ...persona,
+        id: getPersonaId(persona),
+        name,
+        profile: persona.profile || personaProfiles[name] || "./src/lionProfile.png",
+        bubbleClass: persona.bubbleClass || personaBubbleClass[name] || "customBubble",
+      };
+    })
+    .filter(Boolean);
+}
+
+function findPersonaById(personaId) {
+  return activePersonas.find((persona) => getPersonaId(persona) === personaId) || null;
+}
+
+function getPersonaId(persona) {
+  if (!persona) {
+    return "";
+  }
+
+  if (persona.id) {
+    return persona.id;
+  }
+
+  if (persona.key === "커스텀") {
+    return `custom:${persona.name || "커스텀 페르소나"}`;
+  }
+
+  return persona.key || persona.name || "";
 }
 
 function getReplyStatusText(personas) {
