@@ -35,8 +35,20 @@
                     >
 
                     <img
+                        id="review-cover"
                         class="bookCover localReviewCover"
                         src="./src/bookIcon.png"
+                    >
+
+                    <button type="button" id="cover-upload-btn" class="coverUploadBtn">
+                        사진 추가하기
+                    </button>
+
+                    <input
+                        type="file"
+                        id="cover-input"
+                        class="coverInput"
+                        accept="image/*"
                     >
 
                 </div>
@@ -71,8 +83,8 @@
 
             <section class="bottomSection">
 
-                <a href="./debateStart.html" class="chatBtn">
-                    새 대화하기
+                <a href="./localReviewChat.html" class="chatBtn" id="conversation-link">
+                    대화 전문 보기
                 </a>
 
             </section>

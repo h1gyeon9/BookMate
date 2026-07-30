@@ -10,9 +10,7 @@ const messageInput = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
 const reviewBtn = document.getElementById("review-btn");
 const savedSessionBox = document.getElementById("saved-session-box");
-const savedSessionText = document.getElementById("saved-session-text");
-const restoreBtn = document.getElementById("restore-btn");
-const clearSavedBtn = document.getElementById("clear-saved-btn");
+const savedChatList = document.getElementById("saved-chat-list");
 
 const SESSION_STORAGE_KEY = "bookmate.debateSession.v1";
 const REVIEW_STORAGE_KEY = "bookmate.readingReviews.v1";
@@ -157,30 +155,27 @@ reviewBtn.addEventListener("click", async () => {
   await generateReadingReview();
 });
 
-restoreBtn.addEventListener("click", () => {
-  const savedSession = loadSession();
+savedChatList.addEventListener("click", (event) => {
+  const actionButton = event.target.closest("[data-action]");
 
-  if (!savedSession) {
+  if (!actionButton) {
     return;
   }
 
-  selectedPersonas = savedSession.selectedPersonas || [];
-  activePersonas = savedSession.activePersonas || selectedPersonas.map(resolvePersona);
-  chatHistory = savedSession.chatHistory || [];
-  nextPersonaIndex = savedSession.nextPersonaIndex || 0;
-  currentReview = savedSession.currentReview || null;
-  bookInfo = savedSession.bookInfo || null;
-  awaitingBookInfo = Boolean(savedSession.awaitingBookInfo);
-  chatContainer.innerHTML = "";
+  if (actionButton.dataset.action === "restore") {
+    restoreSavedSession();
+    return;
+  }
 
-  showChatPage();
-  renderSavedChat();
-  setBusy(false);
-});
+  if (actionButton.dataset.action === "view") {
+    window.location.href = `./localReviewChat.html?id=${encodeURIComponent(actionButton.dataset.reviewId)}`;
+    return;
+  }
 
-clearSavedBtn.addEventListener("click", () => {
-  localStorage.removeItem(SESSION_STORAGE_KEY);
-  updateSavedSessionBox();
+  if (actionButton.dataset.action === "delete") {
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+    updateSavedSessionBox();
+  }
 });
 
 updateSavedSessionBox();
@@ -297,7 +292,7 @@ async function generateReadingReview() {
 
   const loadingBubble = addLoadingMessage({
     name: "북메이트 독서록",
-    profile: "./src/bookIcon.png",
+    profile: "./src/lionProfile.png",
     bubbleClass: "reviewBubble",
   });
 
@@ -314,6 +309,7 @@ async function generateReadingReview() {
       title: formatReviewTitle(bookInfo),
       bookInfo,
       text,
+      conversation: getConversationForApi(),
       personas: activePersonas.map((persona) => persona.name),
       createdAt: new Date().toISOString(),
     };
@@ -507,7 +503,7 @@ function renderSavedChat() {
   if (currentReview?.text) {
     const loadingBubble = addLoadingMessage({
       name: "북메이트 독서록",
-      profile: "./src/bookIcon.png",
+      profile: "./src/lionProfile.png",
       bubbleClass: "reviewBubble",
     });
 
@@ -577,19 +573,94 @@ function readJson(key, fallback) {
 
 function updateSavedSessionBox() {
   const savedSession = loadSession();
+  const chatRooms = getStoredChatRooms(savedSession);
 
-  if (
-    !savedSession?.chatHistory?.length &&
-    !savedSession?.bookInfo &&
-    !savedSession?.currentReview &&
-    !savedSession?.awaitingBookInfo
-  ) {
+  if (chatRooms.length === 0) {
     savedSessionBox.classList.add("hidden");
     return;
   }
 
-  const updatedAt = savedSession.updatedAt
-    ? new Date(savedSession.updatedAt).toLocaleString("ko-KR", {
+  savedChatList.innerHTML = "";
+  chatRooms.forEach((room) => {
+    savedChatList.appendChild(createChatRoomCard(room));
+  });
+  savedSessionBox.classList.remove("hidden");
+}
+
+function getStoredChatRooms(savedSession) {
+  const rooms = [];
+  const hasSession =
+    savedSession?.chatHistory?.length ||
+    savedSession?.bookInfo ||
+    savedSession?.currentReview ||
+    savedSession?.awaitingBookInfo;
+
+  if (hasSession) {
+    rooms.push({
+      type: "session",
+      title: getSessionTitle(savedSession),
+      updatedAt: savedSession.updatedAt,
+      preview: getSessionPreview(savedSession),
+    });
+  }
+
+  const currentReviewId = savedSession?.currentReview?.id;
+  const storedReviews = readJson(REVIEW_STORAGE_KEY, []);
+  const reviews = Array.isArray(storedReviews) ? storedReviews : [];
+
+  reviews
+    .filter((review) => review.id && review.id !== currentReviewId)
+    .slice(0, 5)
+    .forEach((review) => {
+      rooms.push({
+        type: "review",
+        id: review.id,
+        title: review.title || "저장된 독서록 대화",
+        updatedAt: review.createdAt,
+        preview: getReviewConversationPreview(review),
+      });
+    });
+
+  return rooms;
+}
+
+function restoreSavedSession() {
+  const savedSession = loadSession();
+
+  if (!savedSession) {
+    return;
+  }
+
+  selectedPersonas = savedSession.selectedPersonas || [];
+  activePersonas = savedSession.activePersonas || selectedPersonas.map(resolvePersona);
+  chatHistory = savedSession.chatHistory || [];
+  nextPersonaIndex = savedSession.nextPersonaIndex || 0;
+  currentReview = savedSession.currentReview || null;
+  bookInfo = savedSession.bookInfo || null;
+  awaitingBookInfo = Boolean(savedSession.awaitingBookInfo);
+  chatContainer.innerHTML = "";
+
+  showChatPage();
+  renderSavedChat();
+  setBusy(false);
+}
+
+function createChatRoomCard(room) {
+  const card = document.createElement("article");
+  card.className = "chatRoomCard";
+
+  const title = document.createElement("button");
+  title.type = "button";
+  title.className = "chatRoomTitle";
+  title.dataset.action = room.type === "review" ? "view" : "restore";
+  title.textContent = room.title;
+
+  if (room.id) {
+    title.dataset.reviewId = room.id;
+  }
+
+  const updatedAt = room.updatedAt
+    ? new Date(room.updatedAt).toLocaleString("ko-KR", {
         month: "long",
         day: "numeric",
         hour: "2-digit",
@@ -597,8 +668,77 @@ function updateSavedSessionBox() {
       })
     : "최근";
 
-  savedSessionText.textContent = `${updatedAt} 저장된 대화가 있어요.`;
-  savedSessionBox.classList.remove("hidden");
+  const meta = document.createElement("p");
+  meta.className = "chatRoomMeta";
+  meta.textContent = `${updatedAt} 저장`;
+
+  const preview = document.createElement("p");
+  preview.className = "chatRoomPreview";
+  preview.textContent = room.preview;
+
+  const actions = document.createElement("div");
+  actions.className = "chatRoomActions";
+
+  const primaryButton = document.createElement("button");
+  primaryButton.type = "button";
+  primaryButton.dataset.action = room.type === "review" ? "view" : "restore";
+  primaryButton.textContent = room.type === "review" ? "대화 보기" : "이어하기";
+
+  if (room.id) {
+    primaryButton.dataset.reviewId = room.id;
+  }
+
+  actions.appendChild(primaryButton);
+
+  if (room.type === "session") {
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.dataset.action = "delete";
+    deleteButton.textContent = "삭제";
+    actions.appendChild(deleteButton);
+  }
+
+  card.appendChild(title);
+  card.appendChild(meta);
+  card.appendChild(preview);
+  card.appendChild(actions);
+
+  return card;
+}
+
+function getSessionTitle(session) {
+  if (session.bookInfo?.title) {
+    return formatReviewTitle(session.bookInfo);
+  }
+
+  if (session.currentReview?.title) {
+    return session.currentReview.title;
+  }
+
+  return "책 정보 입력 전 대화";
+}
+
+function getSessionPreview(session) {
+  const lastMessage = [...(session.chatHistory || [])].reverse().find((message) => message.text);
+
+  if (lastMessage?.text) {
+    return lastMessage.text.replace(/\s+/g, " ").slice(0, 56);
+  }
+
+  return session.awaitingBookInfo
+    ? "책 제목과 작가를 입력하면 토론이 시작됩니다."
+    : "아직 저장된 대화 내용이 없습니다.";
+}
+
+function getReviewConversationPreview(review) {
+  const conversation = Array.isArray(review.conversation) ? review.conversation : [];
+  const lastMessage = [...conversation].reverse().find((message) => message.text);
+
+  if (lastMessage?.text) {
+    return lastMessage.text.replace(/\s+/g, " ").slice(0, 56);
+  }
+
+  return "저장된 대화 전문을 확인할 수 있습니다.";
 }
 
 function setBusy(nextBusy, placeholderText) {

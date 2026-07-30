@@ -5,6 +5,10 @@ const reviewId = params.get("id");
 const review = readReviews().find((item) => item.id === reviewId);
 
 const titleEl = document.getElementById("review-title");
+const coverEl = document.getElementById("review-cover");
+const coverInput = document.getElementById("cover-input");
+const coverUploadBtn = document.getElementById("cover-upload-btn");
+const conversationLink = document.getElementById("conversation-link");
 const infoTitleEl = document.getElementById("review-info-title");
 const authorEl = document.getElementById("review-author");
 const createdAtEl = document.getElementById("review-created-at");
@@ -12,6 +16,7 @@ const personasEl = document.getElementById("review-personas");
 const memoListEl = document.getElementById("review-memo-list");
 
 renderReview();
+bindCoverUpload();
 
 function renderReview() {
   if (!review) {
@@ -22,6 +27,9 @@ function renderReview() {
   const parsedReview = parseReview(review.text || "", review.title);
 
   titleEl.textContent = parsedReview.title;
+  coverEl.src = review.coverImage || "./src/bookIcon.png";
+  coverUploadBtn.textContent = review.coverImage ? "표지 바꾸기" : "사진 추가하기";
+  conversationLink.href = `./localReviewChat.html?id=${encodeURIComponent(review.id)}`;
   infoTitleEl.textContent = review.bookInfo?.title || parsedReview.title;
   authorEl.textContent = review.bookInfo?.author || "-";
   createdAtEl.textContent = formatDate(review.createdAt);
@@ -34,6 +42,8 @@ function renderReview() {
 
 function renderMissingReview() {
   titleEl.textContent = "독서록을 찾을 수 없어요";
+  coverUploadBtn.disabled = true;
+  conversationLink.href = "./archive.html";
   infoTitleEl.textContent = "저장된 독서록 없음";
   authorEl.textContent = "-";
   createdAtEl.textContent = "-";
@@ -45,6 +55,31 @@ function renderMissingReview() {
       "브라우저의 로컬 저장소에서 해당 독서록을 찾지 못했습니다. 독서록 탭으로 돌아가 저장된 항목을 다시 선택해주세요.",
     ),
   );
+}
+
+function bindCoverUpload() {
+  coverUploadBtn.addEventListener("click", () => {
+    coverInput.click();
+  });
+
+  coverInput.addEventListener("change", async () => {
+    const file = coverInput.files?.[0];
+
+    if (!file || !review) {
+      return;
+    }
+
+    try {
+      const coverImage = await createCoverImage(file);
+      review.coverImage = coverImage;
+      saveReview(review);
+      coverEl.src = coverImage;
+      coverUploadBtn.textContent = "표지 바꾸기";
+      coverInput.value = "";
+    } catch {
+      alert("표지 이미지를 불러오지 못했습니다. 다른 사진으로 다시 시도해주세요.");
+    }
+  });
 }
 
 function createMemoCard(title, body) {
@@ -164,4 +199,40 @@ function readReviews() {
   } catch {
     return [];
   }
+}
+
+function saveReview(nextReview) {
+  const reviews = readReviews().map((item) =>
+    item.id === nextReview.id ? nextReview : item,
+  );
+
+  localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(reviews));
+}
+
+function createCoverImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const img = new Image();
+
+      img.onload = () => {
+        const maxSize = 520;
+        const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+
+        const context = canvas.getContext("2d");
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.86));
+      };
+
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }

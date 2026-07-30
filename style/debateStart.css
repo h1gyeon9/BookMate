@@ -1,10 +1,13 @@
 main{
 
     margin: 0 auto;
-    padding-bottom: 120px;
+    padding-bottom: 0;
 
     background-color: #F8F4EC;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 /* 상단 */
@@ -17,6 +20,7 @@ main{
     gap: 14px;
 
     padding: 0 20px;
+    flex-shrink: 0;
 }
 
 .backBtn img{
@@ -34,6 +38,7 @@ main{
 
     background-color: #BCA57E;
     opacity: 0.5;
+    flex-shrink: 0;
 }
 
 /* 선택 */
@@ -42,6 +47,17 @@ main{
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 28px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#select-page::-webkit-scrollbar{
+    display: none;
 }
 
 .selectTitle{
@@ -136,9 +152,9 @@ main{
     font-size: 20px;
 }
 
-.savedSession{
+.chatRoomSection{
     width: 320px;
-    margin-top: 16px;
+    margin-top: 24px;
     padding: 14px;
 
     border: 2px solid #D8C3A1;
@@ -147,18 +163,63 @@ main{
     background-color: #FFFDFA;
 }
 
-.savedSession p{
-    font-size: 15px;
-    line-height: 1.5;
+.chatRoomSection h3{
+    font-size: 17px;
+    color: #7D5A2B;
 }
 
-.savedSessionActions{
+.chatRoomList{
     display: flex;
-    gap: 8px;
+    flex-direction: column;
+    gap: 10px;
     margin-top: 10px;
 }
 
-.savedSessionActions button{
+.chatRoomCard{
+    padding: 12px;
+
+    border: 2px solid #E2CEAB;
+    border-radius: 14px;
+
+    background-color: #FFFDF8;
+}
+
+.chatRoomTitle{
+    width: 100%;
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    text-align: left;
+    font-size: 18px;
+    line-height: 1.35;
+    color: #6F5025;
+    cursor: pointer;
+}
+
+.chatRoomMeta{
+    margin-top: 6px;
+    font-size: 15px;
+    color: #A48758;
+}
+
+.chatRoomPreview{
+    margin-top: 8px;
+
+    font-size: 15px;
+    line-height: 1.45;
+    color: #7D5A2B;
+    word-break: keep-all;
+}
+
+.chatRoomActions{
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.chatRoomActions button{
     flex: 1;
     height: 38px;
 
@@ -170,7 +231,7 @@ main{
     font-size: 16px;
 }
 
-.savedSessionActions button:last-child{
+.chatRoomActions button[data-action="delete"]{
     background-color: #EFE7D9;
     color: #735821;
 }
@@ -181,7 +242,8 @@ main{
     display: flex;
     flex-direction: column;
     padding-bottom: 70px;
-    height: calc(100% - 78px);
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
 }
 
@@ -246,10 +308,15 @@ main{
     align-items: center;
 
     flex-shrink: 0;
+    overflow: hidden;
 }
 
 .profile img{
     width: 56px;
+    height: 56px;
+    max-width: 56px;
+    max-height: 56px;
+    object-fit: contain;
 }
 
 .messageContent{

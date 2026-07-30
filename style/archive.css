@@ -103,51 +103,11 @@ main{
     flex-shrink: 0;
 }
 
-/* 필터 */
-
-.filterSection{
-    width: 320px;
-
-    display: flex;
-    justify-content: space-between;
-
-    margin-top: 18px;
-    flex-shrink: 0;
-}
-
-.filterBtn{
-    height: 38px;
-    padding: 0 14px;
-
-    border-radius: 14px;
-    border: 2px solid #D1B48B;
-
-    background-color: #FFFDF8;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-
-    color: #9B7A49;
-    font-size: 13px;
-    white-space: nowrap;
-}
-
-.filterBtn img{
-    width: 16px;
-    height: 16px;
-}
-
-.activeFilter{
-    border: 2px solid #C79E6A;
-}
-
 /* 기록 */
 
 .recordList{
     width: 320px;
-    margin-top: 8px;
+    margin-top: 18px;
     flex: 1;
     min-height: 0;
     overflow-x: hidden;

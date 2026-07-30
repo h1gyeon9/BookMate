@@ -83,6 +83,34 @@ main{
     object-fit: contain;
 }
 
+.localReviewCover[src^="data:"]{
+    padding: 0;
+    object-fit: cover;
+}
+
+.coverUploadBtn{
+    width: 108px;
+    height: 32px;
+    margin-top: 10px;
+
+    border: 2px solid #B08C57;
+    border-radius: 12px;
+
+    background-color: #FFFDF8;
+    color: #9B7643;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.coverUploadBtn:disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.coverInput{
+    display: none;
+}
+
 .bookInfo{
     width: 152px;
 }
