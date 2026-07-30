@@ -25,6 +25,9 @@ main{
 }
 
 .topBar h1{
+    flex: 1;
+    min-width: 0;
+
     font-size: 22px;
     color: #8A642C;
 }
@@ -32,6 +35,27 @@ main{
 .localReviewPage .topBar h1{
     line-height: 1.25;
     word-break: keep-all;
+}
+
+.surveyBtn{
+    height: 32px;
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 12px;
+
+    border: 2px solid #6E8757;
+    border-radius: 12px;
+
+    background-color: #FFFDF8;
+
+    color: #5E754D;
+    font-size: 15px;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 /* 책 정보 */

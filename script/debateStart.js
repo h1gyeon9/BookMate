@@ -207,16 +207,21 @@ function showChatPage() {
 }
 
 async function startChat() {
-  setBusy(true, "페르소나가 입장하고 있어요...");
+  if (activePersonas.length === 0) {
+    setBusy(false);
+    return;
+  }
 
-  for (const persona of activePersonas) {
-    await delay(650);
+  setBusy(true, "페르소나가 토론을 열고 있어요...");
 
-    if (persona.key === "커스텀") {
-      await addOpeningMessageFromGemini(persona);
-      continue;
-    }
+  const openingPersonaIndex = getRandomIndex(activePersonas.length);
+  const persona = activePersonas[openingPersonaIndex];
 
+  await delay(650);
+
+  if (persona.key === "커스텀") {
+    await addOpeningMessageFromGemini(persona);
+  } else {
     addMessage({
       name: persona.name,
       text: personaMessages[persona.key],
@@ -225,6 +230,8 @@ async function startChat() {
     });
   }
 
+  nextPersonaIndex = (openingPersonaIndex + 1) % activePersonas.length;
+  saveSession();
   setBusy(false);
 }
 
@@ -255,36 +262,43 @@ async function addOpeningMessageFromGemini(persona) {
 }
 
 async function requestNextPersonaReply() {
-  const persona = activePersonas[nextPersonaIndex % activePersonas.length];
-  nextPersonaIndex += 1;
-  saveSession();
-  setBusy(true, `${persona.name}가 답변을 준비하고 있어요...`);
+  const personas = getNextReplyPersonas();
 
-  const loadingBubble = addLoadingMessage({
-    name: persona.name,
-    profile: persona.profile,
-    bubbleClass: persona.bubbleClass,
-  });
-
-  try {
-    const text = await requestGemini({
-      action: "chat",
-      personaDescription: persona.name,
-      bookInfo,
-      conversation: getConversationForApi(),
-    });
-
-    completeLoadingMessage(loadingBubble, text);
-    appendHistory({
-      role: "assistant",
-      name: persona.name,
-      text,
-    });
-  } catch {
-    completeLoadingMessage(loadingBubble, "응답을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
-  } finally {
-    setBusy(false);
+  if (personas.length === 0) {
+    return;
   }
+
+  saveSession();
+  setBusy(true, getReplyStatusText(personas));
+
+  for (const [index, persona] of personas.entries()) {
+    const loadingBubble = addLoadingMessage({
+      name: persona.name,
+      profile: persona.profile,
+      bubbleClass: persona.bubbleClass,
+    });
+
+    try {
+      const text = await requestGemini({
+        action: "chat",
+        personaDescription: persona.name,
+        bookInfo,
+        conversation: getConversationForApi(),
+        canAskQuestion: index === personas.length - 1,
+      });
+
+      completeLoadingMessage(loadingBubble, text);
+      appendHistory({
+        role: "assistant",
+        name: persona.name,
+        text,
+      });
+    } catch {
+      completeLoadingMessage(loadingBubble, "응답을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
+    }
+  }
+
+  setBusy(false);
 }
 
 async function generateReadingReview() {
@@ -422,8 +436,8 @@ function completeReviewSavedMessage(loadingBubble, review) {
 
   const link = document.createElement("a");
   link.className = "reviewLinkBtn";
-  link.href = review?.id ? `./archive.html#local-review-${review.id}` : "./archive.html";
-  link.textContent = "독서록 탭으로 이동";
+  link.href = review?.id ? `./localReviewDetail.html?id=${encodeURIComponent(review.id)}` : "./archive.html";
+  link.textContent = "독서록 전문 보기";
 
   loadingBubble.appendChild(notice);
   loadingBubble.appendChild(link);
@@ -829,6 +843,36 @@ function formatReviewTitle(info) {
   }
 
   return info.author ? `<${info.title}> ${info.author}` : `<${info.title}>`;
+}
+
+function getNextReplyPersonas() {
+  const replyCount = Math.min(2, activePersonas.length);
+  const personas = [];
+
+  for (let index = 0; index < replyCount; index += 1) {
+    personas.push(activePersonas[nextPersonaIndex % activePersonas.length]);
+    nextPersonaIndex += 1;
+  }
+
+  return personas;
+}
+
+function getReplyStatusText(personas) {
+  if (personas.length === 1) {
+    return `${personas[0].name}가 답변을 준비하고 있어요...`;
+  }
+
+  return `${personas[0].name}와 ${personas[1].name}가 의견을 준비하고 있어요...`;
+}
+
+function getRandomIndex(length) {
+  if (window.crypto?.getRandomValues) {
+    const values = new Uint32Array(1);
+    window.crypto.getRandomValues(values);
+    return values[0] % length;
+  }
+
+  return Math.floor(Math.random() * length);
 }
 
 function scrollToBottom() {

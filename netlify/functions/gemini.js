@@ -22,12 +22,13 @@ export async function handler(event) {
     conversation = [],
     personas = [],
     bookInfo = null,
+    canAskQuestion = true,
   } = payload;
 
   const prompt =
     action === "review"
       ? buildReviewPrompt(conversation, personas, bookInfo)
-      : buildChatPrompt(personaDescription, conversation, action, bookInfo);
+      : buildChatPrompt(personaDescription, conversation, action, bookInfo, canAskQuestion);
 
   if (!process.env.GEMINI_API_KEY) {
     return {
@@ -84,7 +85,7 @@ export async function handler(event) {
   };
 }
 
-function buildChatPrompt(personaDescription, conversation, action, bookInfo) {
+function buildChatPrompt(personaDescription, conversation, action, bookInfo, canAskQuestion = true) {
   if (!personaDescription) {
     return "독서 토론에 어울리는 짧은 질문을 한국어로 한 문장 작성해주세요.";
   }
@@ -105,6 +106,12 @@ function buildChatPrompt(personaDescription, conversation, action, bookInfo) {
 - 인삿말 없이 바로 본론으로 시작할 것`;
   }
 
+  const questionRule = canAskQuestion
+    ? `- 답변 끝부분에 사용자가 다음으로 답하기 좋은 질문 문장을 정확히 1개만 포함할 것
+- 물음표는 최대 1번만 사용할 것`
+    : `- 사용자에게 직접 답변을 요구하는 질문을 하지 말 것
+- 물음표를 사용하지 말고 해석이나 반론으로만 대화를 이어갈 것`;
+
   return `당신은 독서 토론 채팅방의 "${personaDescription}" 페르소나입니다.
 토론할 책: ${bookLabel}
 
@@ -116,7 +123,8 @@ ${transcript}
 규칙:
 - 반드시 "${personaDescription}"의 성격과 말투를 유지할 것
 - 사용자의 마지막 발화와 이전 맥락을 모두 반영할 것
-- 대화를 이어가기 위해 짧은 해석, 반론, 질문 중 하나 이상을 포함할 것
+- 대화를 이어가기 위해 짧은 해석이나 반론을 포함할 것
+${questionRule}
 - 대화에 나오지 않은 책 제목, 작가, 줄거리를 아는 척하지 말 것
 - 2~4문장으로 작성할 것
 - 이름표나 따옴표 없이 답변 본문만 작성할 것`;
