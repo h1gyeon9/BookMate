@@ -9,6 +9,11 @@ const coverEl = document.getElementById("review-cover");
 const coverInput = document.getElementById("cover-input");
 const coverUploadBtn = document.getElementById("cover-upload-btn");
 const conversationLink = document.getElementById("conversation-link");
+const editReviewBtn = document.getElementById("edit-review-btn");
+const editSectionEl = document.getElementById("review-edit-section");
+const editInputEl = document.getElementById("review-edit-input");
+const saveEditBtn = document.getElementById("save-edit-btn");
+const cancelEditBtn = document.getElementById("cancel-edit-btn");
 const infoTitleEl = document.getElementById("review-info-title");
 const authorEl = document.getElementById("review-author");
 const createdAtEl = document.getElementById("review-created-at");
@@ -17,6 +22,7 @@ const memoListEl = document.getElementById("review-memo-list");
 
 renderReview();
 bindCoverUpload();
+bindReviewEditing();
 
 function renderReview() {
   if (!review) {
@@ -27,6 +33,7 @@ function renderReview() {
   const parsedReview = parseReview(review.text || "", review.title);
 
   titleEl.textContent = parsedReview.title;
+  titleEl.title = parsedReview.title;
   coverEl.src = review.coverImage || "./src/bookIcon.png";
   coverUploadBtn.textContent = review.coverImage ? "표지 바꾸기" : "사진 추가하기";
   conversationLink.href = `./localReviewChat.html?id=${encodeURIComponent(review.id)}`;
@@ -35,14 +42,13 @@ function renderReview() {
   createdAtEl.textContent = formatDate(review.createdAt);
   personasEl.textContent = review.personas?.length ? review.personas.join(", ") : "페르소나 기록 없음";
 
-  parsedReview.sections.forEach((section) => {
-    memoListEl.appendChild(createMemoCard(section.title, section.body));
-  });
+  renderMemoCards(parsedReview.sections);
 }
 
 function renderMissingReview() {
   titleEl.textContent = "독서록을 찾을 수 없어요";
   coverUploadBtn.disabled = true;
+  editReviewBtn.disabled = true;
   conversationLink.href = "./archive.html";
   infoTitleEl.textContent = "저장된 독서록 없음";
   authorEl.textContent = "-";
@@ -55,6 +61,14 @@ function renderMissingReview() {
       "브라우저의 로컬 저장소에서 해당 독서록을 찾지 못했습니다. 독서록 탭으로 돌아가 저장된 항목을 다시 선택해주세요.",
     ),
   );
+}
+
+function renderMemoCards(sections) {
+  memoListEl.innerHTML = "";
+
+  sections.forEach((section) => {
+    memoListEl.appendChild(createMemoCard(section.title, section.body));
+  });
 }
 
 function bindCoverUpload() {
@@ -80,6 +94,49 @@ function bindCoverUpload() {
       alert("표지 이미지를 불러오지 못했습니다. 다른 사진으로 다시 시도해주세요.");
     }
   });
+}
+
+function bindReviewEditing() {
+  editReviewBtn.addEventListener("click", enterEditMode);
+  cancelEditBtn.addEventListener("click", exitEditMode);
+  saveEditBtn.addEventListener("click", saveEditedReview);
+}
+
+function enterEditMode() {
+  if (!review) {
+    return;
+  }
+
+  editInputEl.value = review.text || "";
+  memoListEl.hidden = true;
+  editSectionEl.hidden = false;
+  editReviewBtn.disabled = true;
+  editInputEl.focus();
+}
+
+function exitEditMode() {
+  memoListEl.hidden = false;
+  editSectionEl.hidden = true;
+  editReviewBtn.disabled = false;
+}
+
+function saveEditedReview() {
+  if (!review) {
+    return;
+  }
+
+  const nextText = editInputEl.value.trim();
+
+  if (!nextText) {
+    alert("독서록 내용을 입력해주세요.");
+    return;
+  }
+
+  review.text = nextText;
+  review.title = parseReview(nextText).title;
+  saveReview(review);
+  renderReview();
+  exitEditMode();
 }
 
 function createMemoCard(title, body) {
@@ -121,7 +178,7 @@ function parseReview(text, fallbackTitle) {
   const questionParagraphs = [];
 
   paragraphs.forEach((paragraph) => {
-    if (/더\s*생각해볼\s*질문|질문\s*\d|^\d+[.)]\s/.test(paragraph)) {
+    if (/더\s*생각해볼\s*질문|질문\s*\d/.test(paragraph)) {
       questionParagraphs.push(paragraph);
       return;
     }
@@ -141,7 +198,7 @@ function parseReview(text, fallbackTitle) {
 
   if (sections.length === 0) {
     sections.push({
-      title: "대화에서 남은 생각",
+      title: "토론에서 길어 올린 생각",
       body: normalizedText || "저장된 독서록 본문이 없습니다.",
     });
   }
@@ -158,25 +215,92 @@ function extractTitle(text = "") {
 }
 
 function inferSectionTitle(paragraph, index) {
-  const firstLine = paragraph.split("\n")[0].trim();
-  const headingMatch = firstLine.match(/^(.{2,28})[:：]\s*(.+)$/s);
+  const heading = extractSectionHeading(paragraph);
 
-  if (headingMatch) {
-    return headingMatch[1].trim();
+  if (heading) {
+    return heading;
   }
 
-  return ["대화에서 남은 생각", "내가 정리한 감상", "새롭게 생긴 관점"][index] || "기억하고 싶은 문장";
+  return makeTopicTitle(paragraph, index);
 }
 
 function cleanupParagraph(paragraph) {
+  const lines = paragraph.split("\n");
   const firstLine = paragraph.split("\n")[0].trim();
-  const headingMatch = firstLine.match(/^(.{2,28})[:：]\s*(.+)$/s);
+  const markdownHeadingMatch = firstLine.match(/^#{1,4}\s+(.+)$/);
+  const boldHeadingMatch = firstLine.match(/^\*\*(.+)\*\*$/);
+  const headingMatch = firstLine.match(/^(.{2,32})[:：]\s*(.*)$/s);
+  const headingLabel = headingMatch?.[1]?.trim();
+
+  if ((markdownHeadingMatch || boldHeadingMatch) && lines.length > 1) {
+    return lines.slice(1).join("\n").trim();
+  }
 
   if (!headingMatch) {
     return paragraph;
   }
 
-  return paragraph.replace(firstLine, headingMatch[2].trim()).trim();
+  if (headingLabel === "소제목" && lines.length > 1) {
+    return lines.slice(1).join("\n").trim();
+  }
+
+  return headingMatch[2].trim()
+    ? paragraph.replace(firstLine, headingMatch[2].trim()).trim()
+    : lines.slice(1).join("\n").trim();
+}
+
+function extractSectionHeading(paragraph) {
+  const firstLine = paragraph.split("\n")[0].trim();
+  const markdownHeadingMatch = firstLine.match(/^#{1,4}\s+(.+)$/);
+  const boldHeadingMatch = firstLine.match(/^\*\*(.+)\*\*$/);
+  const headingMatch = firstLine.match(/^(.{2,32})[:：]\s*(.*)$/s);
+  const headingLabel = headingMatch?.[1]?.trim();
+
+  if (markdownHeadingMatch) {
+    return cleanupHeading(markdownHeadingMatch[1]);
+  }
+
+  if (boldHeadingMatch) {
+    return cleanupHeading(boldHeadingMatch[1]);
+  }
+
+  if (headingMatch) {
+    if (headingLabel === "소제목" && headingMatch[2].trim()) {
+      return cleanupHeading(headingMatch[2]);
+    }
+
+    return cleanupHeading(headingMatch[1]);
+  }
+
+  return "";
+}
+
+function makeTopicTitle(paragraph, index) {
+  const firstSentence = paragraph
+    .replace(/\s+/g, " ")
+    .split(/[.!?。？！]/)[0]
+    .replace(/^[“"'「『(<\[]+/, "")
+    .trim();
+
+  if (!firstSentence) {
+    return `토론 주제 ${index + 1}`;
+  }
+
+  const compactTitle = firstSentence
+    .replace(/^(나는|저는|이번\s*토론에서|토론에서는)\s*/, "")
+    .slice(0, 18)
+    .trim();
+
+  return compactTitle || `토론 주제 ${index + 1}`;
+}
+
+function cleanupHeading(value = "") {
+  return value
+    .replace(/^\d+[.)]\s*/, "")
+    .replace(/^주제\s*\d+\s*[:：.-]?\s*/, "")
+    .replace(/^소제목\s*[:：]\s*/, "")
+    .replace(/\*\*/g, "")
+    .trim();
 }
 
 function formatDate(value) {

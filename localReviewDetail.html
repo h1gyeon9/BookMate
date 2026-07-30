@@ -83,11 +83,29 @@
 
             <section class="memoSection" id="review-memo-list"></section>
 
+            <section class="editSection" id="review-edit-section" hidden>
+                <textarea id="review-edit-input" class="reviewEditInput"></textarea>
+
+                <div class="editActions">
+                    <button type="button" class="chatBtn secondaryBtn" id="cancel-edit-btn">
+                        취소
+                    </button>
+
+                    <button type="button" class="chatBtn" id="save-edit-btn">
+                        저장
+                    </button>
+                </div>
+            </section>
+
             <section class="bottomSection">
 
                 <a href="./localReviewChat.html" class="chatBtn" id="conversation-link">
                     대화 전문 보기
                 </a>
+
+                <button type="button" class="chatBtn secondaryBtn" id="edit-review-btn">
+                    수정
+                </button>
 
             </section>
         </div>

@@ -8,6 +8,15 @@ main{
     padding-bottom: 120px;
 }
 
+.localReviewPage{
+    padding-bottom: 0;
+    overflow: hidden;
+}
+
+[hidden]{
+    display: none !important;
+}
+
 /* 상단 */
 
 .topBar{
@@ -18,6 +27,7 @@ main{
     gap: 12px;
 
     margin-top: 18px;
+    flex-shrink: 0;
 }
 
 .backBtn img{
@@ -34,7 +44,9 @@ main{
 
 .localReviewPage .topBar h1{
     line-height: 1.25;
-    word-break: keep-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .surveyBtn{
@@ -68,6 +80,13 @@ main{
     overflow-y: auto;
 }
 
+.localReviewPage .reviewWrapper{
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    padding-bottom: 16px;
+}
+
 .bookSection{
     width: 320px;
 
@@ -76,6 +95,11 @@ main{
     align-items: flex-start;
 
     margin-top: 28px;
+}
+
+.localReviewPage .bookSection{
+    justify-content: space-between;
+    gap: 18px;
 }
 
 .bookCoverBox{
@@ -139,6 +163,10 @@ main{
     width: 152px;
 }
 
+.localReviewInfo{
+    width: 184px;
+}
+
 .infoRow{
     display: flex;
     align-items: center;
@@ -161,8 +189,26 @@ main{
 }
 
 .localReviewInfo .infoContent{
+    flex: 1;
+    min-width: 0;
+
     line-height: 1.35;
+    text-align: right;
     word-break: keep-all;
+    overflow-wrap: anywhere;
+}
+
+.localReviewInfo .infoRow{
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.localReviewInfo .infoTitle{
+    width: auto;
+    flex: 0 0 54px;
+
+    line-height: 1.35;
+    white-space: nowrap;
 }
 
 .starBox{
@@ -224,6 +270,41 @@ main{
     white-space: pre-line;
 }
 
+.editSection{
+    width: 320px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    margin-top: 30px;
+}
+
+.reviewEditInput{
+    width: 100%;
+    min-height: 420px;
+    resize: vertical;
+
+    padding: 16px;
+
+    border: 2px solid #CFAF6A;
+    border-radius: 8px;
+
+    background-color: #FFFDF8;
+
+    color: #4D4538;
+    font-size: 16px;
+    line-height: 1.7;
+    outline: none;
+    white-space: pre-wrap;
+}
+
+.editActions{
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
 /* 버튼 */
 
 .bottomSection{
@@ -231,6 +312,7 @@ main{
 
     display: flex;
     justify-content: flex-end;
+    gap: 8px;
 
     margin-top: 8px;
 }
@@ -251,6 +333,22 @@ main{
 
     color: #9B7643;
     font-size: 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button.chatBtn{
+    font: inherit;
+}
+
+.secondaryBtn{
+    background-color: #EFE7D9;
+    color: #735821;
+}
+
+.chatBtn:disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .chatBtn img{
@@ -258,7 +356,8 @@ main{
 }
 
 nav{
-    margin-top: 10px;
+    flex-shrink: 0;
+    margin: 10px 0 18px;
 }
 
 @media (max-width: 600px) {
@@ -283,6 +382,7 @@ nav{
 
     .bookSection,
     .memoSection,
+    .editSection,
     .bottomSection {
         width: calc(100% - 72px);
         max-width: 320px;
