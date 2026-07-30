@@ -98,12 +98,16 @@ main{
 }
 
 .localReviewPage .bookSection{
-    justify-content: space-between;
-    gap: 18px;
+    width: 348px;
+    max-width: calc(100% - 44px);
+
+    justify-content: flex-start;
+    gap: 12px;
 }
 
 .bookCoverBox{
     position: relative;
+    flex: 0 0 108px;
 }
 
 .tape{
@@ -164,7 +168,9 @@ main{
 }
 
 .localReviewInfo{
-    width: 184px;
+    flex: 1;
+    width: auto;
+    min-width: 0;
 }
 
 .infoRow{
@@ -200,14 +206,18 @@ main{
 
 .localReviewInfo .infoRow{
     align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
 }
 
 .localReviewInfo .infoTitle{
     width: auto;
-    flex: 0 0 54px;
+    flex: 0 0 50px;
 
     line-height: 1.35;
+    white-space: nowrap;
+}
+
+#review-created-at{
     white-space: nowrap;
 }
 
@@ -386,5 +396,10 @@ nav{
     .bottomSection {
         width: calc(100% - 72px);
         max-width: 320px;
+    }
+
+    .localReviewPage .bookSection{
+        width: calc(100% - 44px);
+        max-width: 348px;
     }
 }
