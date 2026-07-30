@@ -270,7 +270,7 @@ main{
 
     flex: 1;
     overflow-y: auto;
-    padding-bottom: 180px;
+    padding-bottom: 230px;
 }
 
 /* 메시지 */
@@ -419,7 +419,7 @@ main{
 
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     gap: 8px;
 
     padding: 0 18px;
@@ -428,9 +428,10 @@ main{
 .chatInput{
     flex: 1;
     min-width: 0;
-    height: 46px;
+    min-height: 46px;
+    max-height: 150px;
 
-    padding: 0 16px;
+    padding: 10px 16px;
     color: var(--main-color);
 
     border-radius: 21px;
@@ -441,6 +442,9 @@ main{
     box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
     outline: none;
     font-size: 16px;
+    line-height: 1.45;
+    resize: none;
+    overflow-y: auto;
 }
 
 .chatInput:disabled{

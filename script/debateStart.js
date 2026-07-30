@@ -114,6 +114,7 @@ chatForm.addEventListener("submit", async (event) => {
   }
 
   messageInput.value = "";
+  resizeChatInput();
 
   if (awaitingBookInfo) {
     bookInfo = parseBookInfo(userText);
@@ -180,8 +181,23 @@ savedChatList.addEventListener("click", (event) => {
   }
 });
 
+messageInput.addEventListener("input", resizeChatInput);
+
+messageInput.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" || event.shiftKey || event.isComposing) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (!sendBtn.disabled) {
+    chatForm.requestSubmit();
+  }
+});
+
 updateSavedSessionBox();
 setBusy(false);
+resizeChatInput();
 
 function resolvePersona(persona) {
   if (persona === "커스텀") {
@@ -338,14 +354,18 @@ async function generateReadingReview() {
       conversation: getConversationForApi(),
     });
 
+    const now = new Date().toISOString();
+
     currentReview = {
-      id: createId(),
+      ...currentReview,
+      id: currentReview?.id || createId(),
       title: formatReviewTitle(bookInfo),
       bookInfo,
       text,
       conversation: getConversationForApi(),
       personas: activePersonas.map((persona) => persona.name),
-      createdAt: new Date().toISOString(),
+      createdAt: currentReview?.createdAt || now,
+      updatedAt: now,
     };
 
     saveReview(currentReview);
@@ -452,7 +472,7 @@ function completeReviewSavedMessage(loadingBubble, review) {
 
   const notice = document.createElement("p");
   notice.className = "reviewLinkText";
-  notice.textContent = "독서록이 생성되어 로컬에 저장되었습니다.";
+  notice.textContent = "독서록이 로컬에 저장되었습니다.";
 
   const link = document.createElement("a");
   link.className = "reviewLinkBtn";
@@ -793,6 +813,8 @@ function setBusy(nextBusy, placeholderText) {
   } else {
     messageInput.placeholder = "책에 대한 생각을 입력하세요";
   }
+
+  resizeChatInput();
 }
 
 function addBookInfoPrompt() {
@@ -1065,6 +1087,11 @@ function getRandomIndex(length) {
 
 function scrollToBottom() {
   chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function resizeChatInput() {
+  messageInput.style.height = "auto";
+  messageInput.style.height = `${Math.min(messageInput.scrollHeight, 150)}px`;
 }
 
 function delay(ms) {

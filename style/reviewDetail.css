@@ -59,15 +59,16 @@ main{
 
     padding: 0 12px;
 
-    border: 2px solid #6E8757;
+    border: 2px solid #C7432A;
     border-radius: 12px;
 
-    background-color: #FFFDF8;
+    background-color: #E95B35;
 
-    color: #5E754D;
+    color: #FFFFFF;
     font-size: 15px;
     text-decoration: none;
     white-space: nowrap;
+    box-shadow: 0 3px 8px rgba(199, 67, 42, 0.28);
 }
 
 /* 책 정보 */
