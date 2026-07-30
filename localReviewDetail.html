@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/png" href="./src/lionProfile.png">
+    <link rel="stylesheet" href="./style/style.css">
+    <link rel="stylesheet" href="./style/reviewDetail.css">
+
+    <title>북메이트 - 저장된 독서록</title>
+</head>
+<body>
+
+    <main class="localReviewPage">
+
+        <header class="topBar">
+
+            <a href="./archive.html" class="backBtn">
+                <img src="./src/back.png">
+            </a>
+
+            <h1 id="review-title">저장된 독서록</h1>
+
+        </header>
+
+        <div class="reviewWrapper">
+            <section class="bookSection">
+
+                <div class="bookCoverBox">
+
+                    <img
+                        class="tape"
+                        src="./src/tape.png"
+                    >
+
+                    <img
+                        class="bookCover localReviewCover"
+                        src="./src/bookIcon.png"
+                    >
+
+                </div>
+
+                <div class="bookInfo localReviewInfo">
+
+                    <div class="infoRow">
+                        <p class="infoTitle">제목</p>
+                        <p class="infoContent" id="review-info-title">-</p>
+                    </div>
+
+                    <div class="infoRow">
+                        <p class="infoTitle">저자</p>
+                        <p class="infoContent" id="review-author">-</p>
+                    </div>
+
+                    <div class="infoRow">
+                        <p class="infoTitle">작성일</p>
+                        <p class="infoContent" id="review-created-at">-</p>
+                    </div>
+
+                    <div class="infoRow">
+                        <p class="infoTitle">캐릭터</p>
+                        <p class="infoContent" id="review-personas">-</p>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="memoSection" id="review-memo-list"></section>
+
+            <section class="bottomSection">
+
+                <a href="./debateStart.html" class="chatBtn">
+                    새 대화하기
+                </a>
+
+            </section>
+        </div>
+
+        <nav>
+
+            <a href="./index.html" class="navbarElement">
+                <img src="./src/mynaui_home.png"/>
+                <p>홈</p>
+            </a>
+
+            <a href="./debateStart.html" class="navbarElement">
+                <img src="./src/clarity_talk-bubbles-line.png"/>
+                <p>대화</p>
+            </a>
+
+            <a href="./archive.html" class="navbarElement">
+                <img src="./src/hugeicons_book-open-02.png"/>
+                <p>독서록</p>
+            </a>
+
+            <a href="./character.html" class="navbarElement">
+                <img src="./src/tabler_man-filled.png"/>
+                <p>캐릭터</p>
+            </a>
+
+            <a href="./mypage.html" class="navbarElement">
+                <img src="./src/weui_me-outlined.png"/>
+                <p>마이</p>
+            </a>
+
+        </nav>
+
+    </main>
+
+    <script src="./script/localReviewDetail.js"></script>
+
+</body>
+</html>

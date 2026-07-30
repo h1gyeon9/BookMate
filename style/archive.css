@@ -3,7 +3,8 @@ main{
     flex-direction: column;
     align-items: center;
     background-color: #F8F4EC;
-    padding-bottom: 110px;
+    padding-bottom: 18px;
+    overflow: hidden;
 }
 
 /* 연도 */
@@ -11,6 +12,7 @@ main{
 .yearSection{
     width: 320px;
     margin-top: 25px;
+    flex-shrink: 0;
 }
 
 .yearHeader{
@@ -98,6 +100,7 @@ main{
     margin-top: 20px;
     background-color: #B39A73;
     opacity: 0.5;
+    flex-shrink: 0;
 }
 
 /* 필터 */
@@ -109,6 +112,7 @@ main{
     justify-content: space-between;
 
     margin-top: 18px;
+    flex-shrink: 0;
 }
 
 .filterBtn{
@@ -144,6 +148,15 @@ main{
 .recordList{
     width: 320px;
     margin-top: 8px;
+    flex: 1;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 12px;
+}
+
+.recordList::-webkit-scrollbar{
+    display: none;
 }
 
 .recordCard{
@@ -236,10 +249,6 @@ main{
     transition: transform 0.2s ease;
 }
 
-.openBtn.expanded img{
-    transform: rotate(180deg);
-}
-
 .moreBtn{
     margin-top: 26px;
 
@@ -253,5 +262,6 @@ main{
 }
 
 nav{
-    margin-top: 100px;
+    margin-top: 12px;
+    flex-shrink: 0;
 }

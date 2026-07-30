@@ -317,6 +317,27 @@ main{
     border: 2px solid #CFAF6A;
 }
 
+.reviewLinkText{
+    color: #4D4538;
+}
+
+.reviewLinkBtn{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 38px;
+    margin-top: 12px;
+    padding: 0 14px;
+
+    border-radius: 14px;
+
+    background-color: #6E8757;
+    color: white;
+    font-size: 15px;
+    text-decoration: none;
+}
+
 /* 입력창 */
 
 .inputSection{

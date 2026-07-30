@@ -22,6 +22,8 @@ let activePersonas = [];
 let chatHistory = [];
 let nextPersonaIndex = 0;
 let currentReview = null;
+let bookInfo = null;
+let awaitingBookInfo = false;
 let isBusy = false;
 
 const personaMessages = {
@@ -91,12 +93,15 @@ startBtn.addEventListener("click", async () => {
   activePersonas = selectedPersonas.map(resolvePersona);
   chatHistory = [];
   currentReview = null;
+  bookInfo = null;
+  awaitingBookInfo = true;
   nextPersonaIndex = 0;
   chatContainer.innerHTML = "";
 
   showChatPage();
+  addBookInfoPrompt();
   saveSession();
-  await startChat();
+  setBusy(false);
 });
 
 chatForm.addEventListener("submit", async (event) => {
@@ -109,6 +114,24 @@ chatForm.addEventListener("submit", async (event) => {
   }
 
   messageInput.value = "";
+
+  if (awaitingBookInfo) {
+    bookInfo = parseBookInfo(userText);
+    awaitingBookInfo = false;
+
+    addMessage({
+      name: "나",
+      text: formatReviewTitle(bookInfo),
+      role: "user",
+      bubbleClass: "userBubble",
+      persist: false,
+    });
+
+    saveSession();
+    await startChat();
+    return;
+  }
+
   addMessage({
     name: "나",
     text: userText,
@@ -146,6 +169,8 @@ restoreBtn.addEventListener("click", () => {
   chatHistory = savedSession.chatHistory || [];
   nextPersonaIndex = savedSession.nextPersonaIndex || 0;
   currentReview = savedSession.currentReview || null;
+  bookInfo = savedSession.bookInfo || null;
+  awaitingBookInfo = Boolean(savedSession.awaitingBookInfo);
   chatContainer.innerHTML = "";
 
   showChatPage();
@@ -219,6 +244,7 @@ async function addOpeningMessageFromGemini(persona) {
     const text = await requestGemini({
       action: "opening",
       personaDescription: persona.name,
+      bookInfo,
       conversation: [],
     });
 
@@ -249,6 +275,7 @@ async function requestNextPersonaReply() {
     const text = await requestGemini({
       action: "chat",
       personaDescription: persona.name,
+      bookInfo,
       conversation: getConversationForApi(),
     });
 
@@ -278,13 +305,14 @@ async function generateReadingReview() {
     const text = await requestGemini({
       action: "review",
       personas: activePersonas.map((persona) => persona.name),
+      bookInfo,
       conversation: getConversationForApi(),
     });
 
-    completeLoadingMessage(loadingBubble, text);
-
     currentReview = {
       id: createId(),
+      title: formatReviewTitle(bookInfo),
+      bookInfo,
       text,
       personas: activePersonas.map((persona) => persona.name),
       createdAt: new Date().toISOString(),
@@ -292,6 +320,7 @@ async function generateReadingReview() {
 
     saveReview(currentReview);
     saveSession();
+    completeReviewSavedMessage(loadingBubble, currentReview);
   } catch {
     completeLoadingMessage(loadingBubble, "독서록을 생성하지 못했습니다. 대화를 조금 더 나눈 뒤 다시 시도해주세요.");
   } finally {
@@ -387,6 +416,29 @@ function completeLoadingMessage(loadingBubble, text) {
   scrollToBottom();
 }
 
+function completeReviewSavedMessage(loadingBubble, review) {
+  loadingBubble.classList.remove("loadingBubble");
+  loadingBubble.textContent = "";
+
+  const notice = document.createElement("p");
+  notice.className = "reviewLinkText";
+  notice.textContent = "독서록이 생성되어 로컬에 저장되었습니다.";
+
+  const link = document.createElement("a");
+  link.className = "reviewLinkBtn";
+  link.href = review?.id ? `./archive.html#local-review-${review.id}` : "./archive.html";
+  link.textContent = "독서록 탭으로 이동";
+
+  loadingBubble.appendChild(notice);
+  loadingBubble.appendChild(link);
+
+  if (review?.id) {
+    loadingBubble.dataset.reviewId = review.id;
+  }
+
+  scrollToBottom();
+}
+
 async function requestGemini(payload) {
   const res = await fetch("/.netlify/functions/gemini", {
     method: "POST",
@@ -425,6 +477,20 @@ function getConversationForApi() {
 }
 
 function renderSavedChat() {
+  if (bookInfo || awaitingBookInfo) {
+    addBookInfoPrompt();
+  }
+
+  if (bookInfo) {
+    addMessage({
+      name: "나",
+      text: formatReviewTitle(bookInfo),
+      role: "user",
+      bubbleClass: "userBubble",
+      persist: false,
+    });
+  }
+
   chatHistory.forEach((message) => {
     const persona = findPersonaByName(message.name);
 
@@ -439,13 +505,13 @@ function renderSavedChat() {
   });
 
   if (currentReview?.text) {
-    addMessage({
+    const loadingBubble = addLoadingMessage({
       name: "북메이트 독서록",
-      text: currentReview.text,
       profile: "./src/bookIcon.png",
       bubbleClass: "reviewBubble",
-      persist: false,
     });
+
+    completeReviewSavedMessage(loadingBubble, currentReview);
   }
 }
 
@@ -469,6 +535,8 @@ function saveSession() {
     chatHistory,
     nextPersonaIndex,
     currentReview,
+    bookInfo,
+    awaitingBookInfo,
     updatedAt: new Date().toISOString(),
   };
 
@@ -510,7 +578,12 @@ function readJson(key, fallback) {
 function updateSavedSessionBox() {
   const savedSession = loadSession();
 
-  if (!savedSession?.chatHistory?.length) {
+  if (
+    !savedSession?.chatHistory?.length &&
+    !savedSession?.bookInfo &&
+    !savedSession?.currentReview &&
+    !savedSession?.awaitingBookInfo
+  ) {
     savedSessionBox.classList.add("hidden");
     return;
   }
@@ -532,13 +605,90 @@ function setBusy(nextBusy, placeholderText) {
   isBusy = nextBusy;
   messageInput.disabled = nextBusy;
   sendBtn.disabled = nextBusy;
-  reviewBtn.disabled = nextBusy || !chatHistory.some((message) => message.role === "user");
+  reviewBtn.disabled =
+    nextBusy ||
+    awaitingBookInfo ||
+    !chatHistory.some((message) => message.role === "user");
 
   if (placeholderText) {
     messageInput.placeholder = placeholderText;
+  } else if (awaitingBookInfo) {
+    messageInput.placeholder = "예: <채식주의자> 한강";
   } else {
     messageInput.placeholder = "책에 대한 생각을 입력하세요";
   }
+}
+
+function addBookInfoPrompt() {
+  addMessage({
+    name: "북메이트",
+    text: "토론을 시작하기 전에 어떤 작가의 어떤 책을 읽었는지 알려주세요.\n예: <채식주의자> 한강",
+    profile: "./src/lionProfile.png",
+    bubbleClass: "reviewBubble",
+    role: "assistant",
+    persist: false,
+  });
+}
+
+function parseBookInfo(input) {
+  const value = input.trim();
+  const angleMatch = value.match(/^<([^>]+)>\s*(.+)$/);
+
+  if (angleMatch) {
+    return {
+      title: angleMatch[1].trim(),
+      author: cleanAuthorName(angleMatch[2]),
+      raw: value,
+    };
+  }
+
+  const authorFirstMatch = value.match(/^(.+?)\s+작가(?:의)?\s+(.+)$/);
+
+  if (authorFirstMatch) {
+    return {
+      title: authorFirstMatch[2].trim(),
+      author: cleanAuthorName(authorFirstMatch[1]),
+      raw: value,
+    };
+  }
+
+  const possessiveMatch = value.match(/^(.+?)의\s+(.+)$/);
+
+  if (possessiveMatch) {
+    return {
+      title: possessiveMatch[2].trim(),
+      author: cleanAuthorName(possessiveMatch[1]),
+      raw: value,
+    };
+  }
+
+  const words = value.split(/\s+/);
+
+  if (words.length >= 2) {
+    return {
+      title: words.slice(0, -1).join(" "),
+      author: cleanAuthorName(words[words.length - 1]),
+      raw: value,
+    };
+  }
+
+  return {
+    title: value,
+    author: "",
+    raw: value,
+  };
+}
+
+function cleanAuthorName(author = "") {
+  return author.replace(/\s*작가$/, "").trim();
+}
+
+function formatReviewTitle(info) {
+  if (!info?.title) {
+    return "대화 기반 독서록";
+  }
+
+  return info.author ? `<${info.title}> ${info.author}` : `<${info.title}>`;
 }
 
 function scrollToBottom() {

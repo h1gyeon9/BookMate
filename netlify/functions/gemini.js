@@ -21,12 +21,13 @@ export async function handler(event) {
     personaDescription,
     conversation = [],
     personas = [],
+    bookInfo = null,
   } = payload;
 
   const prompt =
     action === "review"
-      ? buildReviewPrompt(conversation, personas)
-      : buildChatPrompt(personaDescription, conversation, action);
+      ? buildReviewPrompt(conversation, personas, bookInfo)
+      : buildChatPrompt(personaDescription, conversation, action, bookInfo);
 
   if (!process.env.GEMINI_API_KEY) {
     return {
@@ -83,26 +84,29 @@ export async function handler(event) {
   };
 }
 
-function buildChatPrompt(personaDescription, conversation, action) {
+function buildChatPrompt(personaDescription, conversation, action, bookInfo) {
   if (!personaDescription) {
     return "독서 토론에 어울리는 짧은 질문을 한국어로 한 문장 작성해주세요.";
   }
 
   const transcript = toTranscript(conversation);
+  const bookLabel = formatBookLabel(bookInfo);
 
   if (action === "opening" || !transcript) {
     return `당신은 다음과 같은 페르소나로 독서 토론에 참여합니다: "${personaDescription}"
+토론할 책: ${bookLabel}
 
 독서 토론 채팅방에 처음 입장해 토론을 시작하는 첫 마디를 합니다.
 규칙:
 - 반드시 페르소나의 성격과 말투를 유지할 것
-- 특정 책 내용을 아는 척하지 말 것
+- 사용자가 아직 말하지 않은 구체적인 줄거리나 사건을 아는 척하지 말 것
 - 참가자들에게 질문을 던지거나 토론 주제를 제안하며 대화를 유도할 것
 - 2~4문장 이내로 간결하게 작성할 것
 - 인삿말 없이 바로 본론으로 시작할 것`;
   }
 
   return `당신은 독서 토론 채팅방의 "${personaDescription}" 페르소나입니다.
+토론할 책: ${bookLabel}
 
 아래 대화 내역을 읽고, 지금 차례에 이어질 답변을 작성하세요.
 
@@ -118,22 +122,33 @@ ${transcript}
 - 이름표나 따옴표 없이 답변 본문만 작성할 것`;
 }
 
-function buildReviewPrompt(conversation, personas) {
+function buildReviewPrompt(conversation, personas, bookInfo) {
   const transcript = toTranscript(conversation);
   const personaList = personas.length ? personas.join(", ") : "선택된 페르소나";
+  const bookLabel = formatBookLabel(bookInfo);
 
   return `다음은 사용자가 ${personaList}와 나눈 독서 토론 대화입니다.
+대상 도서: ${bookLabel}
 
 대화 내역:
 ${transcript}
 
 위 대화 내역만 근거로 독서록을 한국어로 작성하세요.
 규칙:
+- 첫 줄은 반드시 "${bookLabel}" 형식의 제목만 작성할 것
 - 대화에 없는 책 제목, 작가, 사건을 임의로 만들지 말 것
 - 사용자가 직접 말한 감상과 페르소나들이 던진 관점을 중심으로 정리할 것
-- 독서록 제목 1줄, 본문 2~3문단, 더 생각해볼 질문 2개를 포함할 것
+- 본문 2~3문단, 더 생각해볼 질문 2개를 포함할 것
 - 문장은 자연스럽고 학생이 직접 쓴 독서록처럼 작성할 것
 - 마크다운 코드블록 없이 바로 독서록 본문만 작성할 것`;
+}
+
+function formatBookLabel(bookInfo) {
+  if (!bookInfo?.title) {
+    return "사용자가 말한 책";
+  }
+
+  return bookInfo.author ? `<${bookInfo.title}> ${bookInfo.author}` : `<${bookInfo.title}>`;
 }
 
 function toTranscript(conversation) {

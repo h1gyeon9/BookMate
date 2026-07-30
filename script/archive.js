@@ -3,6 +3,7 @@ const REVIEW_STORAGE_KEY = "bookmate.readingReviews.v1";
 const recordList = document.querySelector(".recordList");
 
 renderLocalReviews();
+scrollToHashRecord();
 
 function renderLocalReviews() {
   const reviews = readReviews();
@@ -18,10 +19,26 @@ function renderLocalReviews() {
   });
 }
 
+function scrollToHashRecord() {
+  const targetId = decodeURIComponent(window.location.hash.replace("#", ""));
+
+  if (!targetId) {
+    return;
+  }
+
+  const target = document.getElementById(targetId);
+
+  if (target) {
+    target.scrollIntoView({ block: "start" });
+  }
+}
+
 function createReviewCard(review) {
   const reviewText = review.text || "";
+  const reviewTitle = review.title || extractTitle(reviewText);
   const card = document.createElement("article");
   card.className = "recordCard generatedRecord";
+  card.id = `local-review-${review.id}`;
 
   const top = document.createElement("div");
   top.className = "recordTop";
@@ -34,12 +51,12 @@ function createReviewCard(review) {
   badge.textContent = "로컬";
 
   const title = document.createElement("h3");
-  title.textContent = extractTitle(reviewText);
+  title.textContent = reviewTitle;
 
-  const openButton = document.createElement("button");
-  openButton.type = "button";
+  const openButton = document.createElement("a");
   openButton.className = "openBtn";
-  openButton.setAttribute("aria-label", "저장된 독서록 펼치기");
+  openButton.href = `./localReviewDetail.html?id=${encodeURIComponent(review.id)}`;
+  openButton.setAttribute("aria-label", "저장된 독서록 자세히 보기");
 
   const openIcon = document.createElement("img");
   openIcon.src = "./src/downTriangle.png";
@@ -47,21 +64,11 @@ function createReviewCard(review) {
 
   const content = document.createElement("p");
   content.className = "recordContent";
-  content.textContent = makePreview(reviewText);
+  content.textContent = makePreview(reviewText, reviewTitle);
 
   const meta = document.createElement("p");
   meta.className = "generatedRecordMeta";
   meta.textContent = makeMeta(review);
-
-  openButton.addEventListener("click", () => {
-    const isExpanded = card.classList.toggle("expandedRecord");
-    content.textContent = isExpanded ? reviewText : makePreview(reviewText);
-    openButton.classList.toggle("expanded", isExpanded);
-    openButton.setAttribute(
-      "aria-label",
-      isExpanded ? "저장된 독서록 접기" : "저장된 독서록 펼치기",
-    );
-  });
 
   openButton.appendChild(openIcon);
   titleWrap.appendChild(badge);
@@ -89,11 +96,23 @@ function readReviews() {
 
 function extractTitle(text = "") {
   const firstLine = text.split("\n").find((line) => line.trim());
-  return firstLine?.replace(/^제목[:：]\s*/, "").trim() || "새 독서록";
+  return firstLine
+    ?.replace(/^독서록\s*제목[:：]\s*/, "")
+    .replace(/^제목[:：]\s*/, "")
+    .replace(/^#+\s*/, "")
+    .trim() || "새 독서록";
 }
 
-function makePreview(text = "") {
-  const normalizedText = text.replace(/\s+/g, " ").trim();
+function makePreview(text = "", title = "") {
+  const lines = text.split(/\r?\n/).filter((line) => line.trim());
+  const bodyLines =
+    title && extractTitle(lines[0] || "") === title
+      ? lines.slice(1)
+      : lines;
+  const normalizedText = bodyLines
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
 
   if (normalizedText.length <= 120) {
     return normalizedText;

@@ -29,6 +29,11 @@ main{
     color: #8A642C;
 }
 
+.localReviewPage .topBar h1{
+    line-height: 1.25;
+    word-break: keep-all;
+}
+
 /* 책 정보 */
 .reviewWrapper{
     min-height: 750px;
@@ -70,6 +75,14 @@ main{
     border: 3px solid #C7B28B;
 }
 
+.localReviewCover{
+    height: 144px;
+    padding: 36px;
+
+    background-color: #FFFDF8;
+    object-fit: contain;
+}
+
 .bookInfo{
     width: 152px;
 }
@@ -93,6 +106,11 @@ main{
 .infoContent{
     font-size: 16px;
     color: #7B5B2C;
+}
+
+.localReviewInfo .infoContent{
+    line-height: 1.35;
+    word-break: keep-all;
 }
 
 .starBox{
@@ -151,6 +169,7 @@ main{
     color: #4D4538;
 
     word-break: keep-all;
+    white-space: pre-line;
 }
 
 /* 버튼 */
