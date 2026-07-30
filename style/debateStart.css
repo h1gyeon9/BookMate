@@ -28,6 +28,9 @@ main{
 }
 
 .bookHeader h1{
+    flex: 1;
+    min-width: 0;
+
     font-size: 22px;
     color: #8A642C;
 }
@@ -472,6 +475,17 @@ main{
 .reviewBtn{
     width: 74px;
     background-color: #6E8757;
+}
+
+.headerReviewBtn{
+    width: auto;
+    height: 38px;
+    padding: 0 14px;
+
+    border-radius: 14px;
+
+    font-size: 15px;
+    white-space: nowrap;
 }
 
 .sendBtn:disabled,

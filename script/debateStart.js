@@ -224,6 +224,7 @@ function resolvePersona(persona) {
 function showChatPage() {
   selectPage.classList.add("hidden");
   chatPage.classList.remove("hidden");
+  reviewBtn.classList.remove("hidden");
 }
 
 async function startChat() {
