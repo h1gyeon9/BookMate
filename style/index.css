@@ -93,6 +93,11 @@ nav{
     margin-top: 40px;
 }
 
+.redText{
+    color: #C7432A;
+    font-weight: bold;
+}
+
 @media (max-width: 600px) {
     .startChat {
         width: calc(100vw - 16px) !important;
